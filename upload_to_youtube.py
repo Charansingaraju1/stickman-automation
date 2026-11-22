@@ -70,23 +70,23 @@ VIRAL_QUEUE = [
     {
         "id": "hangnail",
         "filenames": ["stickman_hangnail_paronychia.mp4"],
-        "title": "Why You Should NEVER Pull a Hangnail 😱 #shorts",
-        "description": "What actually happens when you rip a hangnail? Here is why pulling it downwards can trigger severe Paronychia infection! #shorts #animation #facts #stickman",
-        "tags": ["shorts", "animation", "science", "medical facts", "stickman", "paronychia"]
+        "title": "Why You Should NEVER Pull a Hangnail 😱🩸 #shorts",
+        "description": "What actually happens when you rip a hangnail? Pulling it downwards can trigger severe paronychia bacterial infection! Never pull it with your teeth or fingers! #shorts #animation #science #medicalfacts #facts #stickman",
+        "tags": ["shorts", "animation", "science", "medical facts", "stickman", "paronychia", "zack d films", "health", "satisfying"]
     },
     {
         "id": "holding_pee",
         "filenames": ["stickman_holding_pee_viral.mp4"],
         "title": "What Happens If You Hold Your Pee?! 🚽💀 #shorts",
-        "description": "Can holding your pee actually rupture your bladder? Here is what happens inside your urinary tract! #shorts #animation #facts #stickman",
-        "tags": ["shorts", "animation", "science", "medical facts", "stickman", "health"]
+        "description": "Can holding your pee actually explode your bladder? Here is the scientific truth of what happens inside your urinary tract! #shorts #animation #facts #stickman #science #health",
+        "tags": ["shorts", "animation", "science", "medical facts", "stickman", "health", "zack d films", "curiosity"]
     },
     {
         "id": "swallowing_gum",
         "filenames": ["stickman_swallowing_gum_viral.mp4"],
-        "title": "What Actually Happens If You Swallow Gum?! 🍬 #shorts",
-        "description": "Does swallowed gum stay in your stomach for 7 years? Let's bust the medical myth with stickman science! #shorts #animation #mythbusters #facts",
-        "tags": ["shorts", "animation", "science", "mythbusters", "stickman", "health"]
+        "title": "Does Swallowed Gum REALLY Stay For 7 Years?! 🍬😱 #shorts",
+        "description": "What actually happens if you swallow chewing gum? Let's bust the 7-year stomach myth with stickman science! #shorts #animation #mythbusters #facts #science #health",
+        "tags": ["shorts", "animation", "science", "mythbusters", "stickman", "health", "facts", "zack d films"]
     }
 ]
 
