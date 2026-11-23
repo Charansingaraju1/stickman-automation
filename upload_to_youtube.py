@@ -87,6 +87,13 @@ VIRAL_QUEUE = [
         "title": "Does Swallowed Gum REALLY Stay For 7 Years?! 🍬😱 #shorts",
         "description": "What actually happens if you swallow chewing gum? Let's bust the 7-year stomach myth with stickman science! #shorts #animation #mythbusters #facts #science #health",
         "tags": ["shorts", "animation", "science", "mythbusters", "stickman", "health", "facts", "zack d films"]
+    },
+    {
+        "id": "holding_sneeze",
+        "filenames": ["stickman_holding_sneeze_viral.mp4", "stickman_holding_sneeze_perfect.mp4"],
+        "title": "What Actually Happens If You Hold in a Sneeze?! 🤧💀 #shorts",
+        "description": "Can holding in a sneeze actually tear your throat or burst an eardrum? Here is what happens when 100 MPH air gets trapped! #shorts #animation #facts #stickman #science #health",
+        "tags": ["shorts", "animation", "science", "medical facts", "stickman", "sneeze", "health", "zack d films", "curiosity"]
     }
 ]
 
