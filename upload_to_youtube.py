@@ -110,6 +110,7 @@ VIRAL_QUEUE = [
         "id": "pimple_danger_triangle",
         "filenames": ["stickman_pimple_danger_viral.mp4"],
         "thumbnail": "stickman_pimple_danger_thumbnail.jpg",
+        "pinned_comment": "Be honest: have you EVER popped a pimple in the Danger Triangle before watching this? 😳👇 (I used to do it all the time...)",
         "title": "Why You Should NEVER Pop It 🩸💀 #shorts",
         "description": "What actually happens when you squeeze a pimple in the Danger Triangle of your face? The shocking medical truth of cavernous sinus infection! #shorts #animation #facts #stickman #science #health",
         "tags": ["shorts", "animation", "science", "medical facts", "stickman", "pimple", "health", "zack d films", "curiosity"]
@@ -159,8 +160,10 @@ def upload_next_in_queue():
                     f"🎉 Boss, Short is LIVE on YouTube!\n\n"
                     f"🎬 Title: {item['title']}\n"
                     f"🔗 Link: https://youtube.com/shorts/{vid_id}\n\n"
-                    f"Published via 100% Free Cloud Automation (0% Laptop Load)! 💪"
                 )
+                if item.get("pinned_comment"):
+                    alert += f"📌 Recommended Pinned Comment:\n\"{item['pinned_comment']}\"\n\n"
+                alert += "Published via 100% Free Cloud Automation (0% Laptop Load)! 💪"
                 send_telegram_alert(alert)
                 return res
             else:
