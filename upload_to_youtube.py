@@ -124,6 +124,26 @@ VIRAL_QUEUE = [
             "anatomy",
             "science"
         ]
+    },
+    {
+        "id": "ear_bug_tweezer_danger",
+        "filenames": ["stickman_ear_bug_viral.mp4"],
+        "thumbnail": "stickman_ear_bug_thumbnail.jpg",
+        "pinned_comment": "Be honest: what would be your IMMEDIATE reaction if an insect crawled in your ear? 🪲😱👇 (Tweezers, Q-tip, or ER?)",
+        "title": "Why You Should NEVER Dig Out an Ear Bug 🪲😱 #shorts",
+        "description": "What actually happens if an insect crawls into your ear canal? Poking inside with tweezers or a cotton swab can shove it deeper and rupture your delicate eardrum! Here is why doctors use warm mineral oil instead. #shorts #medical #anatomy",
+        "tags": [
+            "why you should never dig out an ear bug",
+            "bug in ear canal",
+            "insect trapped in ear",
+            "eardrum rupture tweezers",
+            "mineral oil ear bug removal",
+            "ear canal anatomy",
+            "shorts",
+            "medical",
+            "anatomy",
+            "science"
+        ]
     }
 ]
 
