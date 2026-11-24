@@ -2,3 +2,14 @@ node_modules/
 out/
 .DS_Store
 *.log
+
+# Sensitive Credentials
+token.json
+client_secret.json
+.env
+*.pem
+
+# Python Artifacts
+__pycache__/
+*.py[cod]
+*$py.class

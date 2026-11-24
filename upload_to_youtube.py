@@ -183,7 +183,40 @@ def find_video_file(candidate_names):
                 return p
     return None
 
-def upload_next_in_queue():
+def print_queue_status():
+    queue_file = os.path.join(BASE_DIR, "uploaded_history.json")
+    uploaded = []
+    if os.path.exists(queue_file):
+        try:
+            with open(queue_file, "r") as f:
+                uploaded = json.load(f)
+        except:
+            uploaded = []
+            
+    print("\n" + "=" * 70)
+    print(" 🚀 STICK NATION DAILY — AUTOMATED VIRAL QUEUE")
+    print("=" * 70)
+    for idx, item in enumerate(VIRAL_QUEUE, 1):
+        is_uploaded = item["id"] in uploaded
+        target_file = find_video_file(item["filenames"])
+        thumb_file = find_video_file([item["thumbnail"]]) if item.get("thumbnail") else None
+        
+        if is_uploaded:
+            badge = "✅ PUBLISHED"
+        elif target_file:
+            badge = "🟡 READY TO UPLOAD"
+        else:
+            badge = "⏳ ASSET PENDING"
+            
+        print(f"[{idx}] {badge} | ID: {item['id']}")
+        print(f"    🎬 Title: {item['title']}")
+        print(f"    📹 Video: {os.path.basename(target_file) if target_file else '❌ Pending Render'}")
+        if item.get("thumbnail"):
+            print(f"    🖼️  Thumb: {os.path.basename(thumb_file) if thumb_file else '❌ Missing'}")
+        print()
+    print("=" * 70 + "\n")
+
+def upload_next_in_queue(dry_run=False):
     queue_file = os.path.join(BASE_DIR, "uploaded_history.json")
     uploaded = []
     if os.path.exists(queue_file):
@@ -198,9 +231,14 @@ def upload_next_in_queue():
             target_file = find_video_file(item["filenames"])
             if target_file:
                 thumb_file = find_video_file([item["thumbnail"]]) if item.get("thumbnail") else None
-                print(f"Uploading next in queue: {item['title']} from {target_file}")
+                print(f"{'[DRY RUN] Would upload' if dry_run else 'Uploading'} next in queue: {item['title']} from {target_file}")
                 if thumb_file:
                     print(f"Applying custom thumbnail: {thumb_file}")
+                
+                if dry_run:
+                    print("[DRY RUN] Simulation complete. No video was published.")
+                    return {"id": "dry_run_simulation", "title": item["title"]}
+                    
                 res = upload_video(target_file, item["title"], item["description"], item["tags"], thumbnail_path=thumb_file)
                 vid_id = res.get("id")
                 uploaded.append(item["id"])
@@ -222,4 +260,9 @@ def upload_next_in_queue():
     return None
 
 if __name__ == "__main__":
-    upload_next_in_queue()
+    if "--status" in sys.argv:
+        print_queue_status()
+    elif "--dry-run" in sys.argv:
+        upload_next_in_queue(dry_run=True)
+    else:
+        upload_next_in_queue()
