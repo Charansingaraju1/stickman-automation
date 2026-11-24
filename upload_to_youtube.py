@@ -270,7 +270,18 @@ def upload_next_in_queue(dry_run=False):
                 )
                 if item.get("pinned_comment"):
                     alert += f"📌 Recommended Pinned Comment:\n\"{item['pinned_comment']}\"\n\n"
-                alert += "Published via 100% Free Cloud Automation (0% Laptop Load)! 💪"
+                alert += "Published via 100% Free Cloud Automation (0% Laptop Load)! 💪\n"
+
+                # Check remaining videos in queue
+                remaining_ready = [
+                    q for q in VIRAL_QUEUE 
+                    if q["id"] not in uploaded and find_video_file(q["filenames"]) is not None
+                ]
+                count_left = len(remaining_ready)
+                alert += f"\n📊 Queue Status: {count_left} Short{'s' if count_left != 1 else ''} remaining on deck."
+                if count_left <= 1:
+                    alert += "\n\n⚠️ BOSS ALERT: Queue running low! When you return from college at 7:00 PM, open your laptop to batch-generate the next 3–4 Shorts! 💻"
+
                 send_telegram_alert(alert)
                 return res
             else:
