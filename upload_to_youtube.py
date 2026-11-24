@@ -42,7 +42,7 @@ def get_authenticated_service():
             raise RuntimeError("No valid credentials or client_secret.json found!")
     return build("youtube", "v3", credentials=creds)
 
-def upload_video(file_path, title, description, tags=None, privacy="public", thumbnail_path=None):
+def upload_video(file_path, title, description, tags=None, privacy="public", thumbnail_path=None, comment_text=None):
     youtube = get_authenticated_service()
     body = {
         "snippet": {
@@ -74,6 +74,25 @@ def upload_video(file_path, title, description, tags=None, privacy="public", thu
             print(f"Thumbnail uploaded successfully for video {response['id']}!")
         except Exception as e:
             print(f"Warning: Failed to set custom thumbnail: {e}")
+
+    if comment_text:
+        try:
+            c_res = youtube.commentThreads().insert(
+                part="snippet",
+                body={
+                    "snippet": {
+                        "videoId": response['id'],
+                        "topLevelComment": {
+                            "snippet": {
+                                "textOriginal": comment_text
+                            }
+                        }
+                    }
+                }
+            ).execute()
+            print(f"Automated top-level comment posted! ID: {c_res['id']}")
+        except Exception as e:
+            print(f"Note on automated comment posting: {e}")
 
     return response
 
@@ -239,7 +258,7 @@ def upload_next_in_queue(dry_run=False):
                     print("[DRY RUN] Simulation complete. No video was published.")
                     return {"id": "dry_run_simulation", "title": item["title"]}
                     
-                res = upload_video(target_file, item["title"], item["description"], item["tags"], thumbnail_path=thumb_file)
+                res = upload_video(target_file, item["title"], item["description"], item["tags"], thumbnail_path=thumb_file, comment_text=item.get("pinned_comment"))
                 vid_id = res.get("id")
                 uploaded.append(item["id"])
                 with open(queue_file, "w") as f:
