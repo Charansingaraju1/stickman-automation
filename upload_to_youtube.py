@@ -42,7 +42,7 @@ def get_authenticated_service():
             raise RuntimeError("No valid credentials or client_secret.json found!")
     return build("youtube", "v3", credentials=creds)
 
-def upload_video(file_path, title, description, tags=None, privacy="public"):
+def upload_video(file_path, title, description, tags=None, privacy="public", thumbnail_path=None):
     youtube = get_authenticated_service()
     body = {
         "snippet": {
@@ -64,6 +64,17 @@ def upload_video(file_path, title, description, tags=None, privacy="public"):
         if status:
             print(f"Uploaded {int(status.progress() * 100)}%")
     print(f"Video uploaded successfully! Video ID: {response['id']}")
+
+    if thumbnail_path and os.path.exists(thumbnail_path):
+        try:
+            youtube.thumbnails().set(
+                videoId=response['id'],
+                media_body=MediaFileUpload(thumbnail_path, mimetype='image/jpeg')
+            ).execute()
+            print(f"Thumbnail uploaded successfully for video {response['id']}!")
+        except Exception as e:
+            print(f"Warning: Failed to set custom thumbnail: {e}")
+
     return response
 
 VIRAL_QUEUE = [
@@ -98,6 +109,7 @@ VIRAL_QUEUE = [
     {
         "id": "pimple_danger_triangle",
         "filenames": ["stickman_pimple_danger_viral.mp4"],
+        "thumbnail": "stickman_pimple_danger_thumbnail.jpg",
         "title": "Why You Should NEVER Pop It 🩸💀 #shorts",
         "description": "What actually happens when you squeeze a pimple in the Danger Triangle of your face? The shocking medical truth of cavernous sinus infection! #shorts #animation #facts #stickman #science #health",
         "tags": ["shorts", "animation", "science", "medical facts", "stickman", "pimple", "health", "zack d films", "curiosity"]
@@ -134,8 +146,11 @@ def upload_next_in_queue():
         if item["id"] not in uploaded:
             target_file = find_video_file(item["filenames"])
             if target_file:
+                thumb_file = find_video_file([item["thumbnail"]]) if item.get("thumbnail") else None
                 print(f"Uploading next in queue: {item['title']} from {target_file}")
-                res = upload_video(target_file, item["title"], item["description"], item["tags"])
+                if thumb_file:
+                    print(f"Applying custom thumbnail: {thumb_file}")
+                res = upload_video(target_file, item["title"], item["description"], item["tags"], thumbnail_path=thumb_file)
                 vid_id = res.get("id")
                 uploaded.append(item["id"])
                 with open(queue_file, "w") as f:
