@@ -144,6 +144,26 @@ VIRAL_QUEUE = [
             "anatomy",
             "science"
         ]
+    },
+    {
+        "id": "fish_bone_bread_danger",
+        "filenames": ["stickman_fish_bone_viral.mp4"],
+        "thumbnail": "stickman_fish_bone_thumbnail.jpg",
+        "pinned_comment": "Be honest: when a fish bone got stuck in your throat, did you try the bread trick or rush to the doctor? 🍞👇 (What actually happened?)",
+        "title": "Why You Should NEVER Eat Bread for a Fish Bone 🐟💀 #shorts",
+        "description": "What happens if you swallow bread or rice to push down a stuck fish bone? The dense food acts like a hammer, driving the sharp bone through your esophageal wall! Here is what doctors warn. #shorts #medical #anatomy",
+        "tags": [
+            "fish bone stuck in throat",
+            "swallow bread for fish bone",
+            "fish bone rice trick danger",
+            "esophageal perforation fish bone",
+            "ent fish bone removal",
+            "swallowing fish bone myth",
+            "shorts",
+            "medical",
+            "anatomy",
+            "science"
+        ]
     }
 ]
 
