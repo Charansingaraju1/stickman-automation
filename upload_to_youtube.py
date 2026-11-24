@@ -94,6 +94,13 @@ VIRAL_QUEUE = [
         "title": "What Actually Happens If You Hold in a Sneeze?! 🤧💀 #shorts",
         "description": "Can holding in a sneeze actually tear your throat or burst an eardrum? Here is what happens when 100 MPH air gets trapped! #shorts #animation #facts #stickman #science #health",
         "tags": ["shorts", "animation", "science", "medical facts", "stickman", "sneeze", "health", "zack d films", "curiosity"]
+    },
+    {
+        "id": "pimple_danger_triangle",
+        "filenames": ["stickman_pimple_danger_viral.mp4"],
+        "title": "Why You Should NEVER Pop It 🩸💀 #shorts",
+        "description": "What actually happens when you squeeze a pimple in the Danger Triangle of your face? The shocking medical truth of cavernous sinus infection! #shorts #animation #facts #stickman #science #health",
+        "tags": ["shorts", "animation", "science", "medical facts", "stickman", "pimple", "health", "zack d films", "curiosity"]
     }
 ]
 
