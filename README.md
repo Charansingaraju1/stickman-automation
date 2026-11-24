@@ -50,7 +50,7 @@ python upload_to_youtube.py --status
 | 3 | `swallowing_gum` | Does Swallowed Gum REALLY Stay For 7 Years?! 🍬😱 | 58.0s | ✅ Published | `stickman_swallowing_gum_viral.mp4` |
 | 4 | `holding_sneeze` | What Actually Happens If You Hold in a Sneeze?! 🤧💀 | 29.8s | ✅ Published | `stickman_holding_sneeze_viral.mp4` |
 | 5 | `pimple_danger_triangle` | Why You Should NEVER Pop It 🩸💀 | 27.5s | 🟡 **Ready on Deck** | `stickman_pimple_danger_viral.mp4`<br>`stickman_pimple_danger_thumbnail.jpg` |
-| 6 | `ear_bug_tweezer_danger` | Why You Should NEVER Dig Out an Ear Bug 🪲😱 | 27.0s | ⏳ **Queued (Thumbnail Ready)** | `stickman_ear_bug_thumbnail.jpg` |
+| 6 | `ear_bug_tweezer_danger` | Why You Should NEVER Dig Out an Ear Bug 🪲😱 | 26.6s | 🟡 **Ready on Deck** | `stickman_ear_bug_viral.mp4`<br>`stickman_ear_bug_thumbnail.jpg` |
 | 7 | `fish_bone_bread_danger` | Why You Should NEVER Eat Bread for a Fish Bone 🐟💀 | 27.5s | ⏳ **Queued (Beat Sheet Locked)** | Staged in pipeline |
 
 ---
