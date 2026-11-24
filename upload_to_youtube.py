@@ -112,8 +112,18 @@ VIRAL_QUEUE = [
         "thumbnail": "stickman_pimple_danger_thumbnail.jpg",
         "pinned_comment": "Be honest: have you EVER popped a pimple in the Danger Triangle before watching this? 😳👇 (I used to do it all the time...)",
         "title": "Why You Should NEVER Pop It 🩸💀 #shorts",
-        "description": "What actually happens when you squeeze a pimple in the Danger Triangle of your face? The shocking medical truth of cavernous sinus infection! #shorts #animation #facts #stickman #science #health",
-        "tags": ["shorts", "animation", "science", "medical facts", "stickman", "pimple", "health", "zack d films", "curiosity"]
+        "description": "Popping a pimple inside the danger triangle of your face can force bacteria backward through valveless veins directly toward your brain. Here is how squeezing a simple whitehead can trigger cavernous sinus thrombosis and why doctors warn against touching this zone. #shorts #medical #anatomy",
+        "tags": [
+            "danger triangle of face popping pimple",
+            "what happens if you pop a pimple on your nose",
+            "can popping a pimple cause a brain infection",
+            "danger triangle face infection symptoms",
+            "cavernous sinus thrombosis pimple",
+            "shorts",
+            "medical",
+            "anatomy",
+            "science"
+        ]
     }
 ]
 
