@@ -4,12 +4,15 @@ on:
   workflow_dispatch:
     inputs:
       short_id:
-        description: 'Short ID or script to render'
+        description: 'Short key to render in cloud'
         required: true
-        default: 'ear_bug'
+        default: 'fish_bone'
         type: choice
         options:
           - ear_bug
+          - fish_bone
+          - qtip_ear
+          - all
 
 jobs:
   render_video:
@@ -37,10 +40,7 @@ jobs:
         run: pip install edge-tts numpy
 
       - name: Render Short in Cloud
-        run: |
-          if [ "${{ github.event.inputs.short_id }}" = "ear_bug" ]; then
-            python renderers/render_ear_bug.py
-          fi
+        run: python renderers/short_builder.py --short "${{ github.event.inputs.short_id }}"
 
       - name: Commit Rendered Video Asset
         run: |

@@ -169,8 +169,8 @@ VIRAL_QUEUE = [
         "filenames": ["stickman_fish_bone_viral.mp4"],
         "thumbnail": "stickman_fish_bone_thumbnail.jpg",
         "pinned_comment": "Be honest: when a fish bone got stuck in your throat, did you try the bread trick or rush to the doctor? 🍞👇 (What actually happened?)",
-        "title": "Why You Should NEVER Eat Bread for a Fish Bone 🐟💀 #shorts",
-        "description": "What happens if you swallow bread or rice to push down a stuck fish bone? The dense food acts like a hammer, driving the sharp bone through your esophageal wall! Here is what doctors warn. #shorts #medical #anatomy",
+        "title": "Why You Should NEVER Eat Bread for a Fish Bone 🦴😱 #shorts",
+        "description": "Swallowing dense balls of bread or white rice when a fish bone is stuck acts like a hammer against your throat lining. Here is how home remedies cause esophageal perforation and how an ENT removes it safely. #shorts #medical #anatomy",
         "tags": [
             "fish bone stuck in throat",
             "swallow bread for fish bone",
@@ -178,6 +178,64 @@ VIRAL_QUEUE = [
             "esophageal perforation fish bone",
             "ent fish bone removal",
             "swallowing fish bone myth",
+            "shorts",
+            "medical",
+            "anatomy",
+            "science"
+        ]
+    },
+    {
+        "id": "qtip_eardrum_danger",
+        "filenames": ["stickman_qtip_viral.mp4"],
+        "thumbnail": "stickman_qtip_thumbnail.jpg",
+        "pinned_comment": "Be honest: do you STILL use cotton swabs inside your ears after watching this? 🚫👂👇 (Did it ever hurt your eardrum?)",
+        "title": "Why You Should NEVER Put a Q-Tip in Your Ear 🚫👂 #shorts",
+        "description": "Pushing cotton swabs inside your ear canal packs wax backward like a piston against your delicate eardrum membrane. Here is how Q-tips cause compacted earwax rupture and permanent hearing damage. #shorts #medical #anatomy",
+        "tags": [
+            "why you should never put q tip in ear",
+            "q tip eardrum rupture",
+            "cotton swab earwax impaction",
+            "how to safely clean earwax",
+            "ear canal anatomy 3d",
+            "saline ear drops wax removal",
+            "shorts",
+            "medical",
+            "anatomy",
+            "science"
+        ]
+    },
+    {
+        "id": "skin_tag_cutting_danger",
+        "filenames": ["stickman_skin_tag_viral.mp4"],
+        "thumbnail": "stickman_skin_tag_thumbnail.jpg",
+        "pinned_comment": "Be honest: have you ever been tempted to snip a skin tag off at home with clippers? ✂️😳👇",
+        "title": "Why You Should NEVER Cut Off a Skin Tag ✂️🩸 #shorts",
+        "description": "Snipping a skin tag with nail clippers severs an active internal blood vessel tether and exposes deep dermal tissue to bacteria. Here is how a harmless bump turns into unstoppable bleeding and infection. #shorts #medical #anatomy",
+        "tags": [
+            "cutting skin tag with nail clippers",
+            "why you should never cut skin tag",
+            "skin tag bleeding danger",
+            "how dermatologists remove skin tags",
+            "cryotherapy skin tag removal",
+            "shorts",
+            "medical",
+            "anatomy",
+            "science"
+        ]
+    },
+    {
+        "id": "swallow_magnets_danger",
+        "filenames": ["stickman_magnets_viral.mp4"],
+        "thumbnail": "stickman_magnets_thumbnail.jpg",
+        "pinned_comment": "Be honest: did you realize TWO small magnets are 100x deadlier than swallowing one? 🧲😱👇",
+        "title": "Why Swallowing Two Magnets is LETHAL 🧲💀 #shorts",
+        "description": "Swallowing two tiny magnets minutes apart lets them travel into separate intestinal folds before clamping across living tissue like a vise. Here is how internal magnetic clamping tears bowel walls. #shorts #medical #anatomy",
+        "tags": [
+            "what happens if you swallow two magnets",
+            "swallowing magnets internal damage",
+            "neodymium magnets intestine perforation",
+            "emergency surgery swallowed magnets",
+            "medical animation magnets",
             "shorts",
             "medical",
             "anatomy",

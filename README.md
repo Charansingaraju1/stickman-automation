@@ -13,12 +13,12 @@ Autonomous cloud-native pipeline generating, packaging, and publishing high-rete
 
 ```mermaid
 flowchart TD
-    A["⏱️ GitHub Actions Cron\n(17:00 / 19:30 UTC Peak US)"] --> B["🐍 upload_to_youtube.py"]
+    A["⏱️ GitHub Actions Cron\n(19:30 UTC / 2:30 PM EST Peak Daily)"] --> B["🐍 upload_to_youtube.py"]
     B --> C["📋 Check uploaded_history.json\n(Automated Deduplication)"]
     C --> D["🎬 Resolve Next Short in VIRAL_QUEUE"]
-    D --> E["☁️ YouTube Data API v3\n(videos.insert & thumbnails.set)"]
+    D --> E["☁️ YouTube Data API v3\n(videos.insert, thumbnails.set & comments)"]
     E --> F["💾 Commit Updated History to Git\n(chore: [skip ci])"]
-    E --> G["📱 Send Telegram Alert to Boss\n(Live Short URL + Pinned Comment)"]
+    E --> G["📱 Send Telegram Alert to Boss\n(Live Short URL + Queue Inventory Ping)"]
     H["⚡ 24/7 Cloudflare Worker Bot\n(sticknation-bot.sticknation.workers.dev)"] --> I["📊 Live Stats & Diagnostics\n(/dash, /status)"]
 ```
 
@@ -49,9 +49,12 @@ python upload_to_youtube.py --status
 | 2 | `holding_pee` | What Happens If You Hold Your Pee?! 🚽💀 | 41.0s | ✅ Published | `stickman_holding_pee_viral.mp4` |
 | 3 | `swallowing_gum` | Does Swallowed Gum REALLY Stay For 7 Years?! 🍬😱 | 58.0s | ✅ Published | `stickman_swallowing_gum_viral.mp4` |
 | 4 | `holding_sneeze` | What Actually Happens If You Hold in a Sneeze?! 🤧💀 | 29.8s | ✅ Published | `stickman_holding_sneeze_viral.mp4` |
-| 5 | `pimple_danger_triangle` | Why You Should NEVER Pop It 🩸💀 | 27.5s | 🟡 **Ready on Deck** | `stickman_pimple_danger_viral.mp4`<br>`stickman_pimple_danger_thumbnail.jpg` |
-| 6 | `ear_bug_tweezer_danger` | Why You Should NEVER Dig Out an Ear Bug 🪲😱 | 26.6s | 🟡 **Ready on Deck** | `stickman_ear_bug_viral.mp4`<br>`stickman_ear_bug_thumbnail.jpg` |
-| 7 | `fish_bone_bread_danger` | Why You Should NEVER Eat Bread for a Fish Bone 🐟💀 | 27.5s | ⏳ **Queued (Beat Sheet Locked)** | Staged in pipeline |
+| 5 | `pimple_danger_triangle` | Why You Should NEVER Pop It 🩸💀 | 27.5s | ✅ Published | `stickman_pimple_danger_viral.mp4`<br>`stickman_pimple_danger_thumbnail.jpg` |
+| 6 | `ear_bug_tweezer_danger` | Why You Should NEVER Dig Out an Ear Bug 🪲😱 | 26.6s | ✅ Published | `stickman_ear_bug_viral.mp4`<br>`stickman_ear_bug_thumbnail.jpg` |
+| 7 | `fish_bone_bread_danger` | Why You Should NEVER Eat Bread for a Fish Bone 🦴😱 | 27.2s | 🟡 **Ready on Deck** | `stickman_fish_bone_viral.mp4`<br>`stickman_fish_bone_thumbnail.jpg` |
+| 8 | `qtip_eardrum_danger` | Why You Should NEVER Put a Q-Tip in Your Ear 🚫👂 | 26.7s | 🟡 **Ready on Deck** | `stickman_qtip_viral.mp4`<br>`stickman_qtip_thumbnail.jpg` |
+| 9 | `skin_tag_cutting_danger` | Why You Should NEVER Cut Off a Skin Tag ✂️🩸 | ~26.5s | ⏳ **Script & Pipeline Ready** | Awaiting 3D asset batch |
+| 10 | `swallow_magnets_danger` | Why Swallowing Two Magnets is LETHAL 🧲💀 | ~26.5s | ⏳ **Script & Pipeline Ready** | Awaiting 3D asset batch |
 
 ---
 
