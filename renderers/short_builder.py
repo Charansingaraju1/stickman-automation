@@ -15,87 +15,45 @@ os.makedirs(VIDEOS_DIR, exist_ok=True)
 SR = 44100
 
 SHORT_CONFIGS = {
-    "ear_bug": {
-        "title": "StickNation 3D Ear Bug",
-        "output_mp4": "stickman_ear_bug_viral.mp4",
-        "assets_subdir": "ear_bug",
-        "lines": [
-            ("NARRATOR", "If an insect crawls inside your ear, your first instinct could permanently damage your hearing.", "1", "alert", 0.12),
-            ("NARRATOR", "Most people immediately grab tweezers or a cotton swab to dig it out. But this is the worst thing you can do.", "2", "doc", 0.15),
-            ("STICKMAN", "Wait, so using tweezers pushes it deeper?!", "3", "panic", 0.15),
-            ("NARRATOR", "Yes! Poking blindly forces the insect inward, where sharp claws can easily puncture your eardrum.", "4", "alert", 0.18),
-            ("NARRATOR", "Instead, doctors tilt your head and pour warm mineral oil to safely float it out.", "5", "doc", 0.12),
-            ("NARRATOR", "So before you ever stick anything into your ear...", "6", "loop", 0.08),
-        ],
-        "ref_tags": [
-            (0.05, 3.80, "&H003838FF&", "DANGER: FOREIGN OBJECT IN CANAL"),
-            (4.00, 8.80, "&H0000FFF0&", "ANATOMY: AUDITORY CANAL NARROWING"),
-            (9.00, 12.00, "&H0000E6FF&", "HAZARD: BLIND TWEEZER INSERTION"),
-            (12.20, 18.50, "&H003838FF&", "COMPLICATION: TYMPANIC PERFORATION"),
-            (18.70, 24.50, "&H0000FFF0&", "SAFE PROTOCOL: WARM MINERAL OIL FLUSH"),
-        ],
-        "visuals": [
-            ("tunnel.jpg", "1", "push"),
-            ("tweezer.jpg", "2", "pan"),
-            ("clutch.jpg", "3", "zoom"),
-            ("tunnel.jpg", "4", "push"),
-            ("tweezer.jpg", "5", "pan"),
-            ("tunnel.jpg", "6", "zoom"),
-        ],
-        "seed": 42,
-        "intro_skitter": True,
-    },
     "fish_bone": {
         "title": "StickNation 3D Fish Bone",
         "output_mp4": "stickman_fish_bone_viral.mp4",
         "assets_subdir": "fish_bone",
+        # (speaker, text, scene_id, mode, gap_s, ref_tag_color, ref_tag_text)
         "lines": [
-            ("NARRATOR", "If a sharp fish bone gets stuck in your throat, this common dinner trick can tear your esophagus.", "1", "alert", 0.12),
-            ("NARRATOR", "Most people quickly swallow balls of dry bread or rice to push it down. That does the exact opposite.", "2", "doc", 0.15),
-            ("STICKMAN", "Wait, swallowing bread pushes the needle deeper?!", "3", "panic", 0.15),
-            ("NARRATOR", "Yes! Dense food acts like a hammer, snapping the bone horizontal straight through your esophageal wall toward neck arteries.", "4", "alert", 0.18),
-            ("NARRATOR", "Instead, cough gently and let an ENT specialist remove it safely.", "5", "doc", 0.12),
-            ("NARRATOR", "So before you swallow another bite at dinner...", "6", "loop", 0.08),
+            ("NARRATOR", "A tiny fish bone wedged in your throat can slice straight through your esophagus if you swallow the wrong food.", "1", "alert", 0.08, "&H003838FF&", "EMERGENCY: PHARYNGEAL BONE LODGED"),
+            ("NARRATOR", "Most people panic and force down balls of dry bread or rice, thinking it washes the needle into the stomach.", "2", "doc", 0.08, "&H0000E6FF&", "FATAL MYTH: BREAD BOLUS HAMMERING"),
+            ("NARRATOR", "Instead, dense food acts like a solid hammer, slamming into the trapped bone and snapping it sideways.", "3", "alert", 0.08, "&H003838FF&", "MECHANISM: HORIZONTAL TISSUE LOCK"),
+            ("NARRATOR", "Violent throat spasms drive its razor tip deeper through muscle, dangerously close to major neck arteries.", "4", "panic", 0.10, "&H003838FF&", "TRAUMA: ESOPHAGEAL PERFORATION"),
+            ("NARRATOR", "Instead of pushing it down, cough gently and let an ENT specialist lift it out cleanly under scope guidance.", "5", "doc", 0.08, "&H0000FFF0&", "SAFE PROTOCOL: ENT ENDOSCOPIC REMOVAL"),
+            ("NARRATOR", "So the next time you feel a sharp poke at dinner...", "6", "loop", 0.05, None, None),
         ],
-        "ref_tags": [
-            (0.05, 3.80, "&H003838FF&", "EMERGENCY: PHARYNGEAL BONE LODGED"),
-            (4.00, 8.80, "&H0000E6FF&", "FATAL MYTH: BREAD BOLUS HAMMERING"),
-            (9.00, 12.20, "&H003838FF&", "MECHANISM: HORIZONTAL TISSUE LOCK"),
-            (12.40, 19.20, "&H003838FF&", "TRAUMA: ESOPHAGEAL PERFORATION"),
-            (19.40, 24.50, "&H0000FFF0&", "SAFE PROTOCOL: ENT ENDOSCOPIC EXTRACTION"),
-        ],
+        # Frame-0 internal anatomy hook (scene_3_perforation first, NEVER slow exterior table opening!)
         "visuals": [
-            ("scene_1_clutch.jpg", "1", "push"),
+            ("scene_3_perforation.jpg", "1", "hook_punch"),
             ("scene_2_bread.jpg", "2", "pan"),
-            ("scene_3_perforation.jpg", "3", "zoom"),
+            ("scene_1_clutch.jpg", "3", "zoom"),
             ("scene_3_perforation.jpg", "4", "shake"),
             ("scene_4_ent_fix.jpg", "5", "pan"),
-            ("scene_1_clutch.jpg", "6", "push"),
+            ("scene_3_perforation.jpg", "6", "push"),
         ],
         "seed": 77,
-        "intro_skitter": False,
+        "hook_sfx": "crunch",
     },
     "qtip_ear": {
         "title": "StickNation 3D Q-Tip Warning",
         "output_mp4": "stickman_qtip_viral.mp4",
         "assets_subdir": "qtip_ear",
         "lines": [
-            ("NARRATOR", "If you clean your ears with cotton swabs, you aren't removing wax—you're ramming it into your eardrum.", "1", "alert", 0.12),
-            ("NARRATOR", "Every twist packs hardened debris deeper down a narrow bone tunnel like an airtight piston.", "2", "doc", 0.15),
-            ("STICKMAN", "Wait, a soft cotton swab can tear my eardrum?!", "3", "panic", 0.15),
-            ("NARRATOR", "Yes! Compacted wax stretches your paper-thin eardrum until it ruptures, risking severe tinnitus and permanent hearing loss.", "4", "alert", 0.18),
-            ("NARRATOR", "Instead, warm saline ear drops gently dissolve wax so your ear clears naturally.", "5", "doc", 0.12),
-            ("NARRATOR", "So tomorrow morning right after your shower...", "6", "loop", 0.08),
-        ],
-        "ref_tags": [
-            (0.05, 3.80, "&H003838FF&", "HAZARD: PISTON CERUMEN IMPACTION"),
-            (4.00, 8.80, "&H0000E6FF&", "ANATOMY: EXTERNAL AUDITORY CANAL"),
-            (9.00, 12.20, "&H003838FF&", "PRESSURE: TYMPANIC STRETCH LIMIT"),
-            (12.40, 19.20, "&H003838FF&", "INJURY: MEMBRANE PERFORATION"),
-            (19.40, 24.50, "&H0000FFF0&", "SAFE PROTOCOL: WARM SALINE DROPS"),
+            ("NARRATOR", "Every twist of a cotton swab acts like a piston, slamming hardened earwax deeper against your delicate eardrum.", "1", "alert", 0.08, "&H003838FF&", "HAZARD: PISTON CERUMEN IMPACTION"),
+            ("NARRATOR", "Instead of lifting debris out, the blunt tip seals a tight concrete wall inside a dead-end bone tunnel.", "2", "doc", 0.08, "&H0000E6FF&", "ANATOMY: EXTERNAL AUDITORY CANAL"),
+            ("NARRATOR", "As pressure builds, compacted wax traps bacteria in place and bends your paper-thin membrane inward.", "3", "alert", 0.08, "&H003838FF&", "PRESSURE: TYMPANIC STRETCH LIMIT"),
+            ("NARRATOR", "Pushing one millimeter too far tears the membrane open, rattling middle-ear bones and risking permanent hearing loss.", "4", "panic", 0.10, "&H003838FF&", "INJURY: MEMBRANE PERFORATION"),
+            ("NARRATOR", "Instead, warm saline ear drops liquefy trapped wax so your canal flushes itself clean without trauma.", "5", "doc", 0.08, "&H0000FFF0&", "SAFE PROTOCOL: WARM SALINE DROPS"),
+            ("NARRATOR", "So tomorrow morning right after your shower...", "6", "loop", 0.05, None, None),
         ],
         "visuals": [
-            ("scene_1_macro.jpg", "1", "push"),
+            ("scene_1_macro.jpg", "1", "hook_punch"),
             ("scene_2_mirror.jpg", "2", "pan"),
             ("scene_3_rupture.jpg", "3", "zoom"),
             ("scene_3_rupture.jpg", "4", "shake"),
@@ -103,29 +61,22 @@ SHORT_CONFIGS = {
             ("scene_1_macro.jpg", "6", "push"),
         ],
         "seed": 88,
-        "intro_skitter": False,
+        "hook_sfx": "squelch",
     },
     "skin_tag": {
         "title": "StickNation 3D Skin Tag Warning",
         "output_mp4": "stickman_skin_tag_viral.mp4",
         "assets_subdir": "skin_tag",
         "lines": [
-            ("NARRATOR", "If you try snipping a skin tag off with nail clippers, it can trigger unstoppable bleeding in seconds.", "1", "alert", 0.12),
-            ("NARRATOR", "Unlike dead surface skin, a skin tag is fed by living blood vessels and active nerve endings.", "2", "doc", 0.15),
-            ("STICKMAN", "Wait, that tiny bump has a real blood vessel?!", "3", "panic", 0.15),
-            ("NARRATOR", "Yes! Slicing that stalk severs a direct capillary pump, flooding an open dermal wound with bacteria.", "4", "alert", 0.18),
-            ("NARRATOR", "Instead, doctors freeze the base off in seconds with cryotherapy without breaking skin.", "5", "doc", 0.12),
-            ("NARRATOR", "So next time you spot one in the mirror...", "6", "loop", 0.08),
-        ],
-        "ref_tags": [
-            (0.05, 3.80, "&H003838FF&", "DANGER: VASCULAR STALK TRAUMA"),
-            (4.00, 8.80, "&H0000E6FF&", "ANATOMY: LIVING CAPILLARY FEEDER"),
-            (9.00, 12.20, "&H003838FF&", "HEMORRHAGE: ARTERIOLE RUPTURE"),
-            (12.40, 19.20, "&H003838FF&", "RISK: DEEP CELLULITIS INFECTION"),
-            (19.40, 24.50, "&H0000FFF0&", "SAFE PROTOCOL: DERMAL CRYOTHERAPY"),
+            ("NARRATOR", "Snipping a skin tag off with nail clippers slices straight through a living blood vessel and triggers nonstop bleeding.", "1", "alert", 0.08, "&H003838FF&", "DANGER: VASCULAR STALK TRAUMA"),
+            ("NARRATOR", "Unlike dead surface skin, every skin tag stalk hides an active capillary feeder and live nerve core.", "2", "doc", 0.08, "&H0000E6FF&", "ANATOMY: LIVING CAPILLARY FEEDER"),
+            ("NARRATOR", "Dirty household blades crush the surrounding dermis, flooding the raw open follicle with surface skin bacteria.", "3", "alert", 0.08, "&H003838FF&", "HEMORRHAGE: ARTERIOLE RUPTURE"),
+            ("NARRATOR", "Without sterile clotting, a harmless skin bump rapidly escalates into severe scarring and deep cellulitis infection.", "4", "panic", 0.10, "&H003838FF&", "RISK: DEEP CELLULITIS INFECTION"),
+            ("NARRATOR", "Instead, dermatologists apply a quick cryotherapy probe that freezes the blood supply off cleanly without breaking skin.", "5", "doc", 0.08, "&H0000FFF0&", "SAFE PROTOCOL: DERMAL CRYOTHERAPY"),
+            ("NARRATOR", "So next time you inspect your neck in the mirror...", "6", "loop", 0.05, None, None),
         ],
         "visuals": [
-            ("scene_1_macro.jpg", "1", "push"),
+            ("scene_1_macro.jpg", "1", "hook_punch"),
             ("scene_2_mirror.jpg", "2", "pan"),
             ("scene_3_vessel.jpg", "3", "zoom"),
             ("scene_3_vessel.jpg", "4", "shake"),
@@ -133,29 +84,22 @@ SHORT_CONFIGS = {
             ("scene_1_macro.jpg", "6", "push"),
         ],
         "seed": 91,
-        "intro_skitter": False,
+        "hook_sfx": "crunch",
     },
     "two_magnets": {
         "title": "StickNation 3D Two Magnets Lethal",
         "output_mp4": "stickman_magnets_viral.mp4",
         "assets_subdir": "two_magnets",
         "lines": [
-            ("NARRATOR", "Swallowing one tiny magnet usually passes right through you, but swallowing two can silently tear your gut apart.", "1", "alert", 0.12),
-            ("NARRATOR", "Swallowed minutes apart, they slide into separate loops of intestine before snapping magnetically toward each other.", "2", "doc", 0.15),
-            ("STICKMAN", "Wait, they clamp onto my organs through tissue?!", "3", "panic", 0.15),
-            ("NARRATOR", "Yes! That vise grip crushes blood flow completely, choking tissue until your bowel walls rot and leak acid.", "4", "alert", 0.18),
-            ("NARRATOR", "Once clamped inside, only emergency surgery can safely separate them.", "5", "doc", 0.12),
-            ("NARRATOR", "So if anyone ever accidentally holds magnets near their mouth...", "6", "loop", 0.08),
-        ],
-        "ref_tags": [
-            (0.05, 3.80, "&H003838FF&", "HAZARD: NEODYMIUM ATTRACTION"),
-            (4.00, 8.80, "&H0000E6FF&", "MECHANISM: CROSS-LOOP CLAMPING"),
-            (9.00, 12.20, "&H003838FF&", "INJURY: ISCHEMIC TISSUE VISE"),
-            (12.40, 19.20, "&H003838FF&", "TRAUMA: BOWEL NECROSIS & LEAK"),
-            (19.40, 24.50, "&H0000FFF0&", "INTERVENTION: EMERGENCY SURGERY"),
+            ("NARRATOR", "Swallowing two tiny magnets can snap separate intestinal loops together like a steel vise and tear your gut apart.", "1", "alert", 0.08, "&H003838FF&", "HAZARD: NEODYMIUM ATTRACTION"),
+            ("NARRATOR", "Swallowed minutes apart, each sphere slides into a different fold of bowel before locking violently across living tissue.", "2", "doc", 0.08, "&H0000E6FF&", "MECHANISM: CROSS-LOOP CLAMPING"),
+            ("NARRATOR", "That relentless magnetic clamp chokes blood flow completely, starving delicate mucosal walls of oxygen.", "3", "alert", 0.08, "&H003838FF&", "INJURY: ISCHEMIC TISSUE VISE"),
+            ("NARRATOR", "Within hours, trapped tissue turns black and necrotic, ripping open to leak digestive acid inside your body.", "4", "panic", 0.10, "&H003838FF&", "TRAUMA: BOWEL NECROSIS & LEAK"),
+            ("NARRATOR", "Nothing outside emergency surgery can pry them apart once clamped, making immediate X-ray imaging critical.", "5", "doc", 0.08, "&H0000FFF0&", "INTERVENTION: EMERGENCY SURGERY"),
+            ("NARRATOR", "So if anyone ever holds small magnets near their lips...", "6", "loop", 0.05, None, None),
         ],
         "visuals": [
-            ("scene_1_gut_pull.jpg", "1", "push"),
+            ("scene_1_gut_pull.jpg", "1", "hook_punch"),
             ("scene_2_swallow.jpg", "2", "pan"),
             ("scene_3_clamp.jpg", "3", "zoom"),
             ("scene_3_clamp.jpg", "4", "shake"),
@@ -163,7 +107,7 @@ SHORT_CONFIGS = {
             ("scene_1_gut_pull.jpg", "6", "push"),
         ],
         "seed": 99,
-        "intro_skitter": False,
+        "hook_sfx": "squelch",
     },
 }
 
@@ -206,8 +150,7 @@ def build_audio_mix(vo, total_dur, scene_starts, cfg):
     t_full = np.linspace(0, total_dur, N, endpoint=False)
     rng = np.random.default_rng(cfg["seed"])
 
-    # Tension bass pulse bed
-    beat_hz = 122.0 / 60.0
+    beat_hz = 126.0 / 60.0
     pulse = np.exp(-((t_full * beat_hz) % 1.0) * 7.5)
     dark_bed = (
         0.48 * np.sin(2 * np.pi * 55.00 * t_full) +
@@ -224,43 +167,52 @@ def build_audio_mix(vo, total_dur, scene_starts, cfg):
         if i1 > i0:
             sfx[i0:i1] += arr[:i1 - i0] * gain
 
-    def make_vine_boom(dur=1.05):
+    def make_vine_boom(dur=0.95):
         nt = int(SR * dur)
         tt = np.linspace(0, dur, nt)
-        f = np.linspace(88, 26, nt)
-        sub = np.sin(2 * np.pi * np.cumsum(f) / SR) * np.exp(-tt * 2.8)
-        hit = np.sin(2 * np.pi * 165 * tt) * np.exp(-tt * 14.0)
+        f = np.linspace(92, 26, nt)
+        sub = np.sin(2 * np.pi * np.cumsum(f) / SR) * np.exp(-tt * 3.0)
+        hit = np.sin(2 * np.pi * 175 * tt) * np.exp(-tt * 15.0)
         return sub * 0.85 + hit * 0.35
 
-    def make_whoosh(dur=0.26, low=160, high=780):
+    def make_whoosh(dur=0.24, low=170, high=820):
         nt = int(SR * dur)
         tt = np.linspace(0, dur, nt)
-        n = np.convolve(rng.normal(0, 1, nt), np.ones(25) / 25.0, mode="same")
+        n = np.convolve(rng.normal(0, 1, nt), np.ones(24) / 24.0, mode="same")
         env = np.sin(np.pi * tt / dur) ** 1.5
         sw = np.sin(2 * np.pi * np.cumsum(np.linspace(low, high, nt)) / SR) * 0.25
         return (n * 0.9 + sw) * env
 
-    if cfg.get("intro_skitter"):
-        skit_dur = 0.85
-        nt_skit = int(SR * skit_dur)
-        tt_skit = np.linspace(0, skit_dur, nt_skit)
-        skit_audio = (
-            rng.normal(0, 1, nt_skit)
-            * (np.sin(2 * np.pi * 28 * tt_skit) > 0).astype(np.float32)
-            * np.exp(-tt_skit * 1.5)
-            * 0.35
-        )
-        add_sfx(0.05, skit_audio, 0.85)
-    else:
-        # 0:00.05 crisp visual hook snap + sub punch
-        add_sfx(0.05, make_vine_boom(0.70), 0.55)
+    def make_organic_jolt(kind="crunch"):
+        dur = 0.45
+        nt = int(SR * dur)
+        tt = np.linspace(0, dur, nt)
+        if kind == "crunch":
+            bursts = (np.sin(2 * np.pi * 32 * tt) > 0.2).astype(np.float32)
+            crackle = rng.normal(0, 1, nt) * bursts * np.exp(-tt * 5.0)
+            snap = np.sin(2 * np.pi * 920 * tt) * np.exp(-tt * 28.0)
+            return crackle * 0.65 + snap * 0.40
+        else:
+            # Wet piston squelch + sub thud
+            f = np.linspace(480, 120, nt)
+            res = np.sin(2 * np.pi * np.cumsum(f) / SR) * np.exp(-tt * 8.0)
+            wet = np.convolve(rng.normal(0, 1, nt), np.ones(18) / 18.0, mode="same") * np.exp(-tt * 6.5)
+            return res * 0.55 + wet * 0.50
 
-    # 0:03.5-0:04.0 sensory jolt to kill early drop-off cliff + cut whooshes on transitions
+    # Immediate Frame-0 hook jolt (kills 0:00-0:02 scroll-by!)
+    add_sfx(0.02, make_organic_jolt(cfg.get("hook_sfx", "crunch")), 0.78)
+    add_sfx(0.02, make_vine_boom(0.65), 0.55)
+
+    # 0:03.5 sensory jolt + cut transitions across escalation beats
     for idx in range(1, len(scene_starts)):
         t_cut = scene_starts[idx]
-        add_sfx(max(0.0, t_cut - 0.12), make_whoosh(), 0.40)
-        if idx in (1, 3, 5):
-            add_sfx(t_cut, make_vine_boom(0.95), 0.72)
+        add_sfx(max(0.0, t_cut - 0.12), make_whoosh(), 0.42)
+        if idx == 1:
+            # Vital 0:03.5-0:04.0 sensory reset cue
+            add_sfx(t_cut, make_organic_jolt(cfg.get("hook_sfx", "crunch")), 0.60)
+            add_sfx(t_cut, make_vine_boom(0.85), 0.72)
+        elif idx in (3, 5):
+            add_sfx(t_cut, make_vine_boom(0.90), 0.70)
 
     mix = vo * 1.12 + music + sfx
     pk = np.max(np.abs(mix))
@@ -269,12 +221,11 @@ def build_audio_mix(vo, total_dur, scene_starts, cfg):
     return np.column_stack((mix, mix))
 
 
-def build_ass_subtitles(timeline_words, total_dur, cfg):
-    # Strict 1-3 words per beat positioned inside vertical center safe zone (Alignment=2, MarginV=760 -> ~45-58% screen height)
+def build_ass_subtitles(timeline_words, ref_intervals, total_dur, cfg):
     chunks = []
     cur = []
     for w in timeline_words:
-        if cur and (w["scene_id"] != cur[-1]["scene_id"] or w["speaker"] != cur[-1]["speaker"] or len(cur) >= 3):
+        if cur and (w["scene_id"] != cur[-1]["scene_id"] or len(cur) >= 3):
             chunks.append(cur)
             cur = []
         cur.append(w)
@@ -291,33 +242,27 @@ def build_ass_subtitles(timeline_words, total_dur, cfg):
         "",
         "[V4+ Styles]",
         "Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding",
-        # Mobile safe zone: Alignment=2 MarginV=760 places heavy captions in vertical center-middle (away from bottom 25% UI & right icons)
         "Style: Default,Impact,92,&H00FFFFFF,&H0000E6FF,&H00000000,&H80000000,-1,0,0,0,100,100,2,0,1,10,5,2,60,110,760,1",
-        "Style: StickmanTalk,Impact,98,&H0000E6FF,&H00FFFFFF,&H00000000,&H80000000,-1,0,0,0,100,100,2,0,1,11,5,2,60,110,760,1",
-        # Top clinical tag safely at 140px from top (avoids bottom UI completely)
         "Style: RefTag,Arial,36,&H00FFFFFF,&H00FFFFFF,&H00000000,&HB0000000,-1,0,0,0,100,100,2,0,3,14,0,8,50,50,140,1",
         "",
         "[Events]",
         "Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text",
     ]
 
-    for rs, re_t, rcol, rtxt in cfg["ref_tags"]:
-        if rs < total_dur:
-            ass_lines.append(f"Dialogue: 1,{fmt_t(rs)},{fmt_t(min(re_t, total_dur))},RefTag,,0,0,0,,{{\\c{rcol}}}{rtxt}")
+    for rs, re_t, rcol, rtxt in ref_intervals:
+        ass_lines.append(f"Dialogue: 1,{fmt_t(rs)},{fmt_t(re_t)},RefTag,,0,0,0,,{{\\c{rcol}}}{rtxt}")
 
     HL = {"alert": "&H003838FF&", "doc": "&H0000E6FF&", "panic": "&H003838FF&", "loop": "&H0000E6FF&"}
 
     for ci, ch in enumerate(chunks):
-        spk = ch[0]["speaker"]
         mode = ch[0]["mode"]
-        style = "StickmanTalk" if spk == "STICKMAN" else "Default"
         base_col = "&H00FFFFFF&"
         hl_col = HL.get(mode, "&H0000E6FF&")
         next_chunk_start = chunks[ci + 1][0]["start"] if ci + 1 < len(chunks) else total_dur
 
         for j, active in enumerate(ch):
             t_s = active["start"]
-            t_e = ch[j + 1]["start"] if j + 1 < len(ch) else min(next_chunk_start, active["end"] + 0.35)
+            t_e = ch[j + 1]["start"] if j + 1 < len(ch) else min(next_chunk_start, active["end"] + 0.25)
             if mode == "loop" and j == len(ch) - 1:
                 t_e = total_dur
 
@@ -325,12 +270,12 @@ def build_ass_subtitles(timeline_words, total_dur, cfg):
             for k, other in enumerate(ch):
                 wtxt = other["word"].upper()
                 if k == j:
-                    line_parts.append(f"{{\\c{hl_col}\\fscx112\\fscy112}}{wtxt}{{\\r{style}}}")
+                    line_parts.append(f"{{\\c{hl_col}\\fscx112\\fscy112}}{wtxt}{{\\rDefault}}")
                 elif k < j:
                     line_parts.append(f"{{\\c{base_col}}}{wtxt}")
                 else:
                     line_parts.append(f"{{\\c&H80A0A0A0&}}{wtxt}")
-            ass_lines.append(f"Dialogue: 2,{fmt_t(t_s)},{fmt_t(t_e)},{style},,0,0,0,,{' '.join(line_parts)}")
+            ass_lines.append(f"Dialogue: 2,{fmt_t(t_s)},{fmt_t(t_e)},Default,,0,0,0,,{' '.join(line_parts)}")
 
     return "\n".join(ass_lines)
 
@@ -344,25 +289,26 @@ async def render_short(short_key):
     assets_dir = os.path.join(BASE_DIR, "assets", cfg["assets_subdir"])
     os.makedirs(work_dir, exist_ok=True)
 
-    print(f"\n=== [{short_key}] STEP 1: SYNTHESIZING VOICE OVER ===")
+    print(f"\n=== [{short_key}] STEP 1: SYNTHESIZING ADULT CLINICAL VOICEOVER ===")
     timeline_words = []
     audio_chunks = []
     scene_starts = []
-    scene_ends = {}
-    cursor = 0.05
+    ref_intervals = []
+    cursor = 0.03
     audio_chunks.append(np.zeros(int(cursor * SR), dtype=np.float32))
 
-    for idx, (spk, text, scene_id, mode, gap) in enumerate(cfg["lines"]):
+    for idx, (spk, text, scene_id, mode, gap, rcol, rtxt) in enumerate(cfg["lines"]):
         mp3_p = os.path.join(work_dir, f"line_{idx:02d}.mp3")
         wav_p = os.path.join(work_dir, f"line_{idx:02d}.wav")
 
-        voice = "en-US-GuyNeural" if spk == "STICKMAN" else "en-US-ChristopherNeural"
-        rate = "+12%" if spk == "STICKMAN" else "+8%"
-        pitch = "+10Hz" if spk == "STICKMAN" else "+0Hz"
+        # Continuous adult clinical narrator voice (calibrated for 25-44 demographic)
+        voice = "en-US-ChristopherNeural"
+        rate = "+10%"
+        pitch = "+0Hz"
 
-        print(f"  Synthesizing [{spk}] Line {idx}: {text}")
+        print(f"  Synthesizing Line {idx}: {text}")
         raw_words = await synth_line(text, voice, rate, pitch, mp3_p)
-        await asyncio.sleep(0.1)
+        await asyncio.sleep(0.08)
 
         subprocess.run(["ffmpeg", "-y", "-i", mp3_p, "-ar", str(SR), "-ac", "1", wav_p], check=True, capture_output=True)
         with wave.open(wav_p, "rb") as w:
@@ -370,15 +316,15 @@ async def render_short(short_key):
 
         nz = np.where(np.abs(arr) > 0.015)[0]
         if len(nz) > 0:
-            trim_start = max(0, nz[0] - int(0.02 * SR))
-            trim_end = min(len(arr), nz[-1] + int(0.05 * SR))
+            trim_start = max(0, nz[0] - int(0.015 * SR))
+            trim_end = min(len(arr), nz[-1] + int(0.04 * SR))
             arr = arr[trim_start:trim_end]
             shift_trim = trim_start / SR
         else:
             shift_trim = 0.0
 
         pk = np.max(np.abs(arr)) + 1e-6
-        arr = (arr / pk) * (0.92 if spk == "STICKMAN" else 0.88)
+        arr = (arr / pk) * 0.90
 
         seg_start = 0.0 if idx == 0 else cursor
         scene_starts.append(seg_start)
@@ -390,7 +336,6 @@ async def render_short(short_key):
                 "word": rw["word"],
                 "start": round(ws, 3),
                 "end": round(we, 3),
-                "speaker": spk,
                 "mode": mode,
                 "scene_id": scene_id,
             })
@@ -400,7 +345,9 @@ async def render_short(short_key):
         if gap > 0:
             audio_chunks.append(np.zeros(int(gap * SR), dtype=np.float32))
             cursor += gap
-        scene_ends[scene_id] = cursor
+
+        if rtxt:
+            ref_intervals.append((seg_start, cursor, rcol, rtxt))
 
     vo = np.concatenate(audio_chunks)
     total_dur = round(len(vo) / SR, 2)
@@ -425,7 +372,7 @@ async def render_short(short_key):
     print(f"=== [{short_key}] STEP 3: GENERATING SAFE-ZONE ASS SUBTITLES ===")
     ass_path = os.path.join(work_dir, "captions.ass")
     with open(ass_path, "w", encoding="utf-8") as f:
-        f.write(build_ass_subtitles(timeline_words, total_dur, cfg))
+        f.write(build_ass_subtitles(timeline_words, ref_intervals, total_dur, cfg))
 
     print(f"=== [{short_key}] STEP 4: RENDERING CLIPS & MUXING ===")
     clip_files = []
@@ -439,14 +386,18 @@ async def render_short(short_key):
 
         clip_p = os.path.join(work_dir, f"clip_{idx}.mp4")
         frames = int(dur * 30) + 2
-        if motion == "push":
-            zoom_expr = "min(zoom+0.0020,1.20)"
+        if motion == "hook_punch":
+            # Rapid opening zoom-in within first 1.5s + micro tremble to stop scroll immediately!
+            zoom_expr = "min(1.00+0.18*min(1,on/45)+0.0008*on,1.26)"
+            xy = "x='iw/2-(iw/zoom/2)+3*sin(on*1.8)*exp(-on/30)':y='ih/2-(ih/zoom/2)+3*cos(on*2.1)*exp(-on/30)'"
+        elif motion == "push":
+            zoom_expr = "min(zoom+0.0022,1.22)"
             xy = "x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)'"
         elif motion == "shake":
             zoom_expr = "1.08+0.08*on/" + str(max(1, frames))
             xy = "x='iw/2-(iw/zoom/2)+6*sin(on*2.0)':y='ih/2-(ih/zoom/2)+4*cos(on*2.3)'"
         elif motion == "zoom":
-            zoom_expr = "min(1.04+0.0022*on,1.22)"
+            zoom_expr = "min(1.04+0.0024*on,1.24)"
             xy = "x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)'"
         else:
             zoom_expr = "max(1.16-0.0016*on,1.0)"
@@ -491,10 +442,10 @@ async def render_short(short_key):
 
 async def main():
     parser = argparse.ArgumentParser(description="StickNation Automated Cloud/Local Short Builder")
-    parser.add_argument("--short", required=True, help="Short key (fish_bone, qtip_ear, ear_bug, or 'all')")
+    parser.add_argument("--short", required=True, help="Short key (fish_bone, qtip_ear, skin_tag, two_magnets, or 'all')")
     args = parser.parse_args()
 
-    targets = list(SHORT_CONFIGS.keys()) if args.short == "all" else [args.short]
+    targets = [k for k in SHORT_CONFIGS if args.short == "all"] if args.short == "all" else [args.short]
     for k in targets:
         await render_short(k)
 

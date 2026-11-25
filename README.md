@@ -51,8 +51,8 @@ python upload_to_youtube.py --status
 | 4 | `holding_sneeze` | What Actually Happens If You Hold in a Sneeze?! 🤧💀 | 29.8s | ✅ Published | `stickman_holding_sneeze_viral.mp4` |
 | 5 | `pimple_danger_triangle` | Why You Should NEVER Pop It 🩸💀 | 27.5s | ✅ Published | `stickman_pimple_danger_viral.mp4`<br>`stickman_pimple_danger_thumbnail.jpg` |
 | 6 | `ear_bug_tweezer_danger` | Why You Should NEVER Dig Out an Ear Bug 🪲😱 | 26.6s | ✅ Published | `stickman_ear_bug_viral.mp4`<br>`stickman_ear_bug_thumbnail.jpg` |
-| 7 | `fish_bone_bread_danger` | Why You Should NEVER Eat Bread for a Fish Bone 🦴😱 | 27.2s | 🟡 **Ready on Deck** | `stickman_fish_bone_viral.mp4`<br>`stickman_fish_bone_thumbnail.jpg` |
-| 8 | `qtip_eardrum_danger` | Why You Should NEVER Put a Q-Tip in Your Ear 🚫👂 | 26.7s | 🟡 **Ready on Deck** | `stickman_qtip_viral.mp4`<br>`stickman_qtip_thumbnail.jpg` |
+| 7 | `fish_bone_bread_danger` | Why You Should NEVER Eat Bread for a Fish Bone 🦴😱 | 29.1s | 🟡 **Ready on Deck** | `stickman_fish_bone_viral.mp4`<br>`stickman_fish_bone_thumbnail.jpg` |
+| 8 | `qtip_eardrum_danger` | Why You Should NEVER Put a Q-Tip in Your Ear 🚫👂 | 30.1s | 🟡 **Ready on Deck** | `stickman_qtip_viral.mp4`<br>`stickman_qtip_thumbnail.jpg` |
 | 9 | `skin_tag_cutting_danger` | Why You Should NEVER Cut Off a Skin Tag ✂️🩸 | ~26.5s | ⏳ **Script & Pipeline Ready** | Awaiting 3D asset batch |
 | 10 | `swallow_magnets_danger` | Why Swallowing Two Magnets is LETHAL 🧲💀 | ~26.5s | ⏳ **Script & Pipeline Ready** | Awaiting 3D asset batch |
 

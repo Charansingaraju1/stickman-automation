@@ -9,10 +9,10 @@ on:
         default: 'fish_bone'
         type: choice
         options:
-          - ear_bug
           - fish_bone
           - qtip_ear
-          - all
+          - skin_tag
+          - two_magnets
 
 jobs:
   render_video:
