@@ -6,13 +6,13 @@ on:
       short_id:
         description: 'Short key to render in cloud'
         required: true
-        default: 'fish_bone'
+        default: 'qtip_ear'
         type: choice
         options:
-          - fish_bone
           - qtip_ear
-          - skin_tag
-          - two_magnets
+          - fish_bone
+          - splinter_tweezers
+          - superglue_eyes
 
 jobs:
   render_video:
