@@ -6,6 +6,7 @@ import argparse
 import json
 import os
 import pathlib
+import re
 import sys
 import urllib.error
 import urllib.request
@@ -80,6 +81,20 @@ def _halt_billing(reason: str, notify: bool = True) -> None:
 def assert_zero_cost(endpoint: str, model: str, notify: bool = True) -> None:
     if endpoint != FREE_ENDPOINT or model not in FREE_MODELS:
         _halt_billing(f"Blocked non-free inference target: {endpoint} / {model}", notify=notify)
+
+
+def audit_security(root_dir: pathlib.Path = ROOT) -> dict[str, Any]:
+    """Security Agent: checks .gitignore secret rules and scans code for exposed tokens."""
+    gi = (root_dir / ".gitignore").read_text(encoding="utf-8", errors="ignore") if (root_dir / ".gitignore").exists() else ""
+    missing_ignores = [p for p in (".env", "token.json", "client_secret.json") if p not in gi]
+    leaks: list[str] = []
+    token_re = re.compile(r"(?:EAAQ[A-Za-z0-9]{16,}|github_pat_[A-Za-z0-9_]{16,}|cfut_[A-Za-z0-9_]{16,})")
+    for p in list((root_dir / "agents").glob("*.py")) + list((root_dir / "renderers").glob("*.py")) + [root_dir / "upload_to_youtube.py"]:
+        if p.exists():
+            txt = p.read_text(encoding="utf-8", errors="ignore")
+            if token_re.search(txt):
+                leaks.append(str(p.relative_to(root_dir)))
+    return {"ok": not missing_ignores and not leaks, "missing_ignores": missing_ignores, "leaks": leaks}
 
 
 def call_free_llm(role: str, user_msg: str, token: str | None) -> dict[str, Any]:
@@ -172,7 +187,14 @@ def run_crew(scenario: str, offline: bool = False, notify: bool = False) -> dict
     pub_review = call_free_llm("publisher", json.dumps(script_out), token) if token else {"approved": det_audit["approved"]}
     approved = bool(det_audit["approved"] and pub_review.get("approved", True))
 
-    result = {"scout": scout_out, "script_agent": script_out, "publisher_review": det_audit, "approved": approved}
+    sec = audit_security()
+    result = {
+        "scout": scout_out,
+        "script_agent": script_out,
+        "publisher_review": det_audit,
+        "security_audit": sec,
+        "approved": approved and sec["ok"],
+    }
     out_dir = ROOT / "agents" / "out"
     out_dir.mkdir(parents=True, exist_ok=True)
     (out_dir / "latest_crew_handoff.json").write_text(json.dumps(result, indent=2), encoding="utf-8")
@@ -235,11 +257,11 @@ def self_test() -> None:
         "visuals": [["diagram_only", "1", "pan"]],
     })
     assert not bad["approved"] and len(bad["issues"]) >= 3
-    # 3. Full offline crew run must pass 100/100 + exact 5 agents registered
+    # 3. Full offline crew run must pass 100/100 + exact 7 agents registered + security pass
     ok = run_crew("hotel_kettle", offline=True, notify=False)
-    assert ok["approved"] and ok["publisher_review"]["score"] == 100
-    assert set(AGENT_ROLES.keys()) == {"c_assistant", "script_agent", "editor", "publisher", "social_manager"}
-    print("SELF_TEST_PASSED: 5-Agent Crew (C Assistant, Script, Editor, Publisher, Social Manager) verified ($0).")
+    assert ok["approved"] and ok["publisher_review"]["score"] == 100 and ok["security_audit"]["ok"]
+    assert set(AGENT_ROLES.keys()) == {"c_assistant", "script_agent", "editor", "publisher", "social_manager", "watchdog", "security_agent"}
+    print("SELF_TEST_PASSED: All 7 Agents (C Assistant, Scriptwriter, Editor, Publisher, Social Manager, Watchdog, Security) verified ($0).")
 
 
 if __name__ == "__main__":
