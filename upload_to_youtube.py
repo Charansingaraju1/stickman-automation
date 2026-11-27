@@ -239,6 +239,26 @@ def find_video_file(candidate_names):
                 return p
     return None
 
+CLOUD_QUEUE_FILE = os.path.join(BASE_DIR, "cloud_queue.json")
+
+
+def load_viral_queue():
+    """Return built-in queue items plus dynamically stocked cloud_queue.json items without duplicates."""
+    items = list(VIRAL_QUEUE)
+    seen = {q["id"] for q in items}
+    if os.path.exists(CLOUD_QUEUE_FILE):
+        try:
+            with open(CLOUD_QUEUE_FILE, "r", encoding="utf-8") as f:
+                extra = json.load(f)
+            for q in extra:
+                if isinstance(q, dict) and q.get("id") and q["id"] not in seen:
+                    items.append(q)
+                    seen.add(q["id"])
+        except Exception as e:
+            print(f"Warning loading cloud_queue.json: {e}")
+    return items
+
+
 def print_queue_status():
     queue_file = os.path.join(BASE_DIR, "uploaded_history.json")
     uploaded = []
@@ -248,11 +268,12 @@ def print_queue_status():
                 uploaded = json.load(f)
         except:
             uploaded = []
-            
+
+    queue_items = load_viral_queue()
     print("\n" + "=" * 70)
     print(" 🚀 STICK NATION DAILY — AUTOMATED VIRAL QUEUE")
     print("=" * 70)
-    for idx, item in enumerate(VIRAL_QUEUE, 1):
+    for idx, item in enumerate(queue_items, 1):
         is_uploaded = item["id"] in uploaded
         target_file = find_video_file(item["filenames"])
         thumb_file = find_video_file([item["thumbnail"]]) if item.get("thumbnail") else None
@@ -279,7 +300,7 @@ def validate_ypp_compliance(item, uploaded_ids):
     if len(item["description"].strip()) < 100 or len(set(desc_words)) < 15:
         raise ValueError(f"YPP Compliance Block [{item['id']}]: description too thin or templated.")
 
-    prior_items = [q for q in VIRAL_QUEUE if q["id"] in uploaded_ids]
+    prior_items = [q for q in load_viral_queue() if q["id"] in uploaded_ids]
     if any(q["title"].strip().lower() == title_norm for q in prior_items):
         raise ValueError(f"YPP Compliance Block [{item['id']}]: duplicate title already published.")
     if prior_items:
@@ -298,8 +319,9 @@ def upload_next_in_queue(dry_run=False):
                 uploaded = json.load(f)
         except:
             uploaded = []
-            
-    for item in VIRAL_QUEUE:
+
+    queue_items = load_viral_queue()
+    for item in queue_items:
         if item["id"] not in uploaded:
             validate_ypp_compliance(item, uploaded)
             target_file = find_video_file(item["filenames"])
@@ -338,7 +360,7 @@ def upload_next_in_queue(dry_run=False):
 
                 # Check remaining videos in queue
                 remaining_ready = [
-                    q for q in VIRAL_QUEUE 
+                    q for q in queue_items 
                     if q["id"] not in uploaded and find_video_file(q["filenames"]) is not None
                 ]
                 count_left = len(remaining_ready)

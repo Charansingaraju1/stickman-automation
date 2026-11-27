@@ -284,19 +284,9 @@ def build_ass_subtitles(timeline_words, ref_intervals, total_dur, cfg):
     return "\n".join(ass_lines)
 
 
-async def render_short(short_key):
-    if short_key not in SHORT_CONFIGS:
-        raise ValueError(f"Unknown short key: {short_key}. Available: {list(SHORT_CONFIGS.keys())}")
-
-    cfg = SHORT_CONFIGS[short_key]
-    vis_imgs = [v[0] for v in cfg["visuals"]]
-    if not cfg.get("allow_legacy_repeats") and max(vis_imgs.count(x) for x in vis_imgs) > 2:
-        raise ValueError(f"YPP Compliance Block [{short_key}]: static frame reused >2 times.")
-    work_dir = os.path.join(OUT_ROOT, f"{short_key}_build")
-    assets_dir = os.path.join(BASE_DIR, "assets", cfg["assets_subdir"])
+async def synthesize_master_audio(short_key, lines, cfg, work_dir):
+    """Synthesize trimmed WordBoundary EdgeTTS voiceover, varied music/SFX bed, and -14 LUFS master."""
     os.makedirs(work_dir, exist_ok=True)
-
-    print(f"\n=== [{short_key}] STEP 1: SYNTHESIZING ADULT CLINICAL VOICEOVER ===")
     timeline_words = []
     audio_chunks = []
     scene_starts = []
@@ -304,16 +294,15 @@ async def render_short(short_key):
     cursor = 0.03
     audio_chunks.append(np.zeros(int(cursor * SR), dtype=np.float32))
 
-    for idx, (spk, text, scene_id, mode, gap, rcol, rtxt) in enumerate(cfg["lines"]):
+    voice = cfg.get("voice") or DEFAULT_VOICES[cfg["seed"] % len(DEFAULT_VOICES)]
+    rate = cfg.get("voice_rate", "+8%")
+    pitch = "+0Hz"
+
+    for idx, (_spk, text, scene_id, mode, gap, rcol, rtxt) in enumerate(lines):
         mp3_p = os.path.join(work_dir, f"line_{idx:02d}.mp3")
         wav_p = os.path.join(work_dir, f"line_{idx:02d}.wav")
 
-        # Varied adult narrator voice unless pinned in config
-        voice = cfg.get("voice") or DEFAULT_VOICES[cfg["seed"] % len(DEFAULT_VOICES)]
-        rate = cfg.get("voice_rate", "+8%")
-        pitch = "+0Hz"
-
-        print(f"  Synthesizing Line {idx}: {text}")
+        print(f"  Synthesizing Line {idx} ({voice}): {text}")
         raw_words = await synth_line(text, voice, rate, pitch, mp3_p)
         await asyncio.sleep(0.08)
 
@@ -358,9 +347,6 @@ async def render_short(short_key):
 
     vo = np.concatenate(audio_chunks)
     total_dur = round(len(vo) / SR, 2)
-    print(f"  Voiceover ready: {total_dur}s")
-
-    print(f"=== [{short_key}] STEP 2: AUDIO MIXING (-14 LUFS) ===")
     stereo = build_audio_mix(vo, total_dur, scene_starts, cfg)
     raw_master = os.path.join(work_dir, "master_raw.wav")
     with wave.open(raw_master, "wb") as w:
@@ -375,6 +361,26 @@ async def render_short(short_key):
         check=True,
         capture_output=True,
     )
+    return timeline_words, scene_starts, ref_intervals, total_dur, norm_master
+
+
+async def render_short(short_key):
+    if short_key not in SHORT_CONFIGS:
+        raise ValueError(f"Unknown short key: {short_key}. Available: {list(SHORT_CONFIGS.keys())}")
+
+    cfg = SHORT_CONFIGS[short_key]
+    vis_imgs = [v[0] for v in cfg["visuals"]]
+    if not cfg.get("allow_legacy_repeats") and max(vis_imgs.count(x) for x in vis_imgs) > 2:
+        raise ValueError(f"YPP Compliance Block [{short_key}]: static frame reused >2 times.")
+    work_dir = os.path.join(OUT_ROOT, f"{short_key}_build")
+    assets_dir = os.path.join(BASE_DIR, "assets", cfg["assets_subdir"])
+    os.makedirs(work_dir, exist_ok=True)
+
+    print(f"\n=== [{short_key}] STEP 1 & 2: VOICEOVER + AUDIO MIX (-14 LUFS) ===")
+    timeline_words, scene_starts, ref_intervals, total_dur, norm_master = await synthesize_master_audio(
+        short_key, cfg["lines"], cfg, work_dir
+    )
+    print(f"  Audio ready: {total_dur}s")
 
     print(f"=== [{short_key}] STEP 3: GENERATING SAFE-ZONE ASS SUBTITLES ===")
     ass_path = os.path.join(work_dir, "captions.ass")

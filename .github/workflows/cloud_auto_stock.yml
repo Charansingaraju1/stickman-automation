@@ -1,0 +1,60 @@
+name: Autonomous Cloud Short Factory ($0)
+
+on:
+  schedule:
+    # Auto-restocks up to 3 ready Shorts cleanly before daily US peak upload windows
+    - cron: '15 9 * * *'
+    - cron: '15 17 * * *'
+  workflow_dispatch:
+    inputs:
+      short_key:
+        description: 'Optional profile key (leave empty to auto-build next)'
+        required: false
+        default: ''
+
+jobs:
+  auto_stock:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python & Node
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install system deps & Chrome libs
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg libnss3 libatk-bridge2.0-0 libcups2 libxcomposite1 libxdamage1 libxfixes3 libxrandr2 libgbm1 libasound2t64 || sudo apt-get install -y ffmpeg libnss3 libatk-bridge2.0-0 libcups2 libxcomposite1 libxdamage1 libxfixes3 libxrandr2 libgbm1 libasound2
+
+      - name: Install Python & Node deps
+        run: |
+          pip install edge-tts numpy
+          npm ci --no-audit --no-fund
+
+      - name: Render & Enqueue Next YPP-Compliant Short ($0)
+        run: |
+          if [ -n "${{ github.event.inputs.short_key }}" ]; then
+            python renderers/cloud_short_factory.py --short "${{ github.event.inputs.short_key }}" --queue
+          else
+            python renderers/cloud_short_factory.py --next --min-ready 3 --queue
+          fi
+
+      - name: Commit Stocked Short & Queue Manifest
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add videos/* cloud_queue.json || true
+          git commit -m "chore(cloud-factory): stock next compliant Short [skip ci]" || echo "Nothing new to stock"
+          git push || echo "Push skipped"

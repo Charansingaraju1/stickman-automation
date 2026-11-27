@@ -283,7 +283,7 @@ def send_c_assistant_daily_brief(scenario: str = "hotel_kettle", offline: bool =
         f"📋 Daily Update — C Assistant\n\n"
         f"📱 Social Manager (@StickNationDaily): {subs} | {views}\n"
         f"🏆 Top Short: {top_title}\n"
-        f"⏰ Publisher Slot: 2:30 PM EST (1:00 AM IST) | {ready_cnt} queued\n"
+        f"⏰ Publisher Slots: 3x/day US Peak (6:30a / 2:30p / 7:30p EST) | {ready_cnt} queued\n"
         f"✍️ Script + Review ({crew['publisher_review']['score']}/100 APV-ready): {crew['scout']['title']}\n"
         f"💬 Deadpan Hook: \"{crew['scout']['deadpan_line']}\"\n"
         f"💸 Billing Guard: $0.00 (Free Cloud Only)\n\n"
@@ -312,7 +312,21 @@ def self_test() -> None:
         ok = run_crew(key, offline=True, notify=False)
         assert ok["approved"] and ok["publisher_review"]["score"] == 100 and ok["security_audit"]["ok"]
     assert set(AGENT_ROLES.keys()) == {"c_assistant", "script_agent", "editor", "publisher", "social_manager", "watchdog", "security_agent"}
-    print("SELF_TEST_PASSED: All 7 Agents + YPP Compliance verified ($0).")
+    # 4. Validate cloud_queue & every CLOUD_PROFILE passes YPP compliance + offline audit
+    from upload_to_youtube import load_viral_queue, validate_ypp_compliance
+    from renderers.cloud_short_factory import CLOUD_PROFILES, build_lines_and_scenes
+    q_items = load_viral_queue()
+    for qi in q_items[8:]:
+        validate_ypp_compliance(qi, [q["id"] for q in q_items[:8]])
+    for ck, cp in CLOUD_PROFILES.items():
+        ls, sc = build_lines_and_scenes(ck, cp)
+        res = audit_script({
+            "title": cp["title"],
+            "lines": [[l[0], l[1], l[2], l[3], l[4], l[5], l[6]] for l in ls],
+            "visuals": [[s[2] or f"vec_{ck}_{i}", str(i + 1), s[1]] for i, s in enumerate(sc)],
+        })
+        assert res["approved"], f"CLOUD_PROFILE {ck} failed YPP audit: {res['issues']}"
+    print("SELF_TEST_PASSED: All 7 Agents + Cloud Factory + YPP Compliance verified ($0).")
 
 
 if __name__ == "__main__":
