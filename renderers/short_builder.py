@@ -67,27 +67,27 @@ SHORT_CONFIGS = {
         "title": "StickNation 3D Mentos + Cola Explosion",
         "output_mp4": "stickman_mentos_cola_viral.mp4",
         "assets_subdir": "mentos_cola",
-        "voice_rate": "+18%",
+        "voice": "en-US-AndrewMultilingualNeural",
+        "voice_rate": "+3%",
         "sub_margin_v": 480,
+        "loop_visual_tail": True,
         "lines": [
-            ("NARRATOR", "Everyone swears Mentos and cola will literally explode your stomach like a soda volcano.", "1", "alert", 0.05, "&H003838FF&", "HAZARD: CO2 FOAM EXPLOSION"),
-            ("NARRATOR", "Drop them together, and millions of microscopic pits on each mint rip dissolved gas loose instantly.", "2", "doc", 0.05, "&H0000E6FF&", "TEST: NUCLEATION SURGE"),
-            ("NARRATOR", "In an open bottle it shoots ten feet high, but inside your sealed gut, foam stacks fast.", "3", "doc", 0.05, "&H0000E6FF&", "ANATOMY: TRAPPED CO2 POCKET"),
-            ("NARRATOR", "Expanding gas inflates your stomach walls tighter and tighter like an overfilled balloon.", "4", "alert", 0.05, "&H003838FF&", "PRESSURE: GASTRIC WALL STRETCH"),
-            ("NARRATOR", "Before your stomach ever pops, violent belly cramps blast a fizzy foam geyser straight back up!", "5", "panic", 0.07, "&H003838FF&", "REFLEX: VOLCANIC FOAM BURP"),
-            ("NARRATOR", "Chugging a huge batch still risks painful spasms or tearing your throat lining during violent vomiting...", "6", "doc", 0.05, "&H0000FFF0&", "RISK: ESOPHAGEAL TISSUE TEAR"),
-            ("NARRATOR", "so next time someone dares you with a full bottle...", "7", "loop", 0.04, None, None),
+            ("NARRATOR", "Bro really ate Mentos and chased it with Coke.", "1", "alert", 0.10, "&H003838FF&", "DON'T MIX"),
+            ("NARRATOR", "Tiny craters on each mint dump the gas instantly.", "2", "doc", 0.08, "&H0000E6FF&", "GAS SURGE"),
+            ("NARRATOR", "In a bottle it flies—inside your belly, it's trapped.", "3", "doc", 0.08, "&H0000E6FF&", "NO EXIT"),
+            ("NARRATOR", "Foam swells your gut tighter than a party balloon—", "4", "alert", 0.08, "&H003838FF&", "BALLOON MODE"),
+            ("NARRATOR", "until your abs panic into a walking soda volcano!", "5", "panic", 0.10, "&H003838FF&", "SODA VOLCANO"),
+            ("NARRATOR", "Your stomach won't pop—it just rockets back up because...", "6", "panic", 0.00, "&H003838FF&", "LOOP WARNING"),
         ],
         "visuals": [
-            ("scene_3_eruption.jpg", "1", "hook_punch"),
-            ("scene_2_gulp.jpg", "2", "zoom"),
+            ("scene_2_gulp.jpg", "1", "hook_punch"),
+            ("scene_3_eruption.jpg", "2", "punch4"),
             ("scene_1_stomach_shock.jpg", "3", "pan"),
             ("scene_3_eruption.jpg", "4", "shake"),
-            ("scene_4_geyser_burp.jpg", "5", "shake"),
+            ("scene_4_geyser_burp.jpg", "5", "punch4"),
             ("scene_1_stomach_shock.jpg", "6", "push"),
-            ("scene_2_gulp.jpg", "7", "zoom"),
         ],
-        "seed": 112,
+        "seed": 124,
         "hook_sfx": "fizz",
     },
 }
@@ -288,7 +288,7 @@ async def render_short(short_key):
         wav_p = os.path.join(work_dir, f"line_{idx:02d}.wav")
 
         # Continuous adult clinical narrator voice (calibrated for 25-44 demographic)
-        voice = "en-US-ChristopherNeural"
+        voice = cfg.get("voice", "en-US-ChristopherNeural")
         rate = cfg.get("voice_rate", "+10%")
         pitch = "+0Hz"
 
@@ -361,11 +361,19 @@ async def render_short(short_key):
         f.write(build_ass_subtitles(timeline_words, ref_intervals, total_dur, cfg))
 
     print(f"=== [{short_key}] STEP 4: RENDERING CLIPS & MUXING ===")
-    clip_files = []
+    clip_specs = []
     for idx, (img_name, scene_id, motion) in enumerate(cfg["visuals"]):
         t_start = scene_starts[idx]
         t_end = scene_starts[idx + 1] if idx + 1 < len(cfg["visuals"]) else total_dur
         dur = max(0.5, round(t_end - t_start, 2))
+        clip_specs.append((img_name, motion, dur))
+    if cfg.get("loop_visual_tail") and clip_specs and clip_specs[-1][2] > 1.0:
+        img_last, mot_last, d_last = clip_specs[-1]
+        clip_specs[-1] = (img_last, mot_last, round(d_last - 0.50, 2))
+        clip_specs.append((cfg["visuals"][0][0], "push", 0.50))
+
+    clip_files = []
+    for idx, (img_name, motion, dur) in enumerate(clip_specs):
         img_p = os.path.join(assets_dir, img_name)
         if not os.path.exists(img_p):
             raise FileNotFoundError(f"Missing visual asset: {img_p}")
@@ -373,9 +381,12 @@ async def render_short(short_key):
         clip_p = os.path.join(work_dir, f"clip_{idx}.mp4")
         frames = int(dur * 30) + 2
         if motion == "hook_punch":
-            # Rapid opening zoom-in within first 1.5s + micro tremble to stop scroll immediately!
-            zoom_expr = "min(1.00+0.18*min(1,on/45)+0.0008*on,1.26)"
+            # Rapid opening 4-frame scale punch-in + micro tremble to stop scroll immediately!
+            zoom_expr = "min(1.00+0.18*min(1,on/4)+0.0008*on,1.26)"
             xy = "x='iw/2-(iw/zoom/2)+3*sin(on*1.8)*exp(-on/30)':y='ih/2-(ih/zoom/2)+3*cos(on*2.1)*exp(-on/30)'"
+        elif motion == "punch4":
+            zoom_expr = "min(1.00+0.18*min(1,on/4)+0.001*on,1.24)"
+            xy = "x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)'"
         elif motion == "push":
             zoom_expr = "min(zoom+0.0022,1.22)"
             xy = "x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)'"

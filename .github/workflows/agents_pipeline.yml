@@ -1,0 +1,39 @@
+name: Free Multi-Agent Draft Crew ($0 Cloud) 🤖
+
+on:
+  schedule:
+    - cron: '30 13 * * *' # 7:00 PM IST daily (Assistant evening briefing)
+  workflow_dispatch:
+    inputs:
+      scenario:
+        description: 'Mistake scenario for autonomous agent crew'
+        required: true
+        default: 'hotel_kettle'
+        type: choice
+        options:
+          - hotel_kettle
+          - bleach_vinegar
+          - grease_fire
+          - reaper_water
+          - superglue_shirt
+
+permissions:
+  contents: read
+  models: read
+
+jobs:
+  agent_crew:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Run 5-Agent Crew + Assistant Brief ($0 Cloud)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python agents/run_agents.py --scenario "${{ github.event.inputs.scenario || 'hotel_kettle' }}" --daily-brief

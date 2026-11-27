@@ -53,7 +53,7 @@ python upload_to_youtube.py --status
 | 6 | `ear_bug_tweezer_danger` | Why You Should NEVER Dig Out an Ear Bug 🪲😱 | 26.6s | ✅ Published | `stickman_ear_bug_viral.mp4`<br>`stickman_ear_bug_thumbnail.jpg` |
 | 7 | `qtip_eardrum_danger` | Why You Should NEVER Clean Ears With Q-Tips 👂😱 | 30.1s | ✅ Published | `stickman_qtip_viral.mp4`<br>`stickman_qtip_thumbnail.jpg` |
 | 8 | `fish_bone_bread_danger` | Why You Should NEVER Eat Bread for a Fish Bone 🦴😱 | 29.1s | ✅ Published | `stickman_fish_bone_viral.mp4`<br>`stickman_fish_bone_thumbnail.jpg` |
-| 9 | `mentos_cola_danger` | What Happens If You Eat Mentos + Cola?! 🧪😱 | 29.2s | 🟡 **Next Up (Tonight 2:30 PM EST)** | `stickman_mentos_cola_viral.mp4`<br>`stickman_mentos_cola_thumbnail.jpg` |
+| 9 | `mentos_cola_danger` | What Happens If You Eat Mentos + Cola?! 🧪😱 | 19.0s | ⏸️ **Local Preview Only (Held)** | `stickman_mentos_cola_viral.mp4`<br>`stickman_mentos_cola_thumbnail.jpg` |
 
 ---
 

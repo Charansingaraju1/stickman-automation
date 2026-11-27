@@ -1,5 +1,6 @@
 node_modules/
 out/
+agents/out/
 .DS_Store
 *.log
 
