@@ -51,10 +51,9 @@ python upload_to_youtube.py --status
 | 4 | `holding_sneeze` | What Actually Happens If You Hold in a Sneeze?! 🤧💀 | 29.8s | ✅ Published | `stickman_holding_sneeze_viral.mp4` |
 | 5 | `pimple_danger_triangle` | Why You Should NEVER Pop It 🩸💀 | 27.5s | ✅ Published | `stickman_pimple_danger_viral.mp4`<br>`stickman_pimple_danger_thumbnail.jpg` |
 | 6 | `ear_bug_tweezer_danger` | Why You Should NEVER Dig Out an Ear Bug 🪲😱 | 26.6s | ✅ Published | `stickman_ear_bug_viral.mp4`<br>`stickman_ear_bug_thumbnail.jpg` |
-| 7 | `qtip_eardrum_danger` | Why You Should NEVER Clean Ears With Q-Tips 👂😱 | 30.1s | 🟡 **Next Up (Tonight 2:30 PM EST)** | `stickman_qtip_viral.mp4`<br>`stickman_qtip_thumbnail.jpg` |
-| 8 | `fish_bone_bread_danger` | Why You Should NEVER Eat Bread for a Fish Bone 🦴😱 | 29.1s | 🟡 **Ready on Deck (Tomorrow)** | `stickman_fish_bone_viral.mp4`<br>`stickman_fish_bone_thumbnail.jpg` |
-| 9 | `splinter_tweezers_danger` | Why You Should NEVER Pull a Splinter With Tweezers 🪵🩸 | ~27s | ⏳ **Script & Pipeline Ready** | Awaiting 3D asset batch |
-| 10 | `superglue_eyelids_danger` | Why You Should NEVER Rip Open Superglued Eyelids 👁️😱 | ~27s | ⏳ **Script & Pipeline Ready** | Awaiting 3D asset batch |
+| 7 | `qtip_eardrum_danger` | Why You Should NEVER Clean Ears With Q-Tips 👂😱 | 30.1s | ✅ Published | `stickman_qtip_viral.mp4`<br>`stickman_qtip_thumbnail.jpg` |
+| 8 | `fish_bone_bread_danger` | Why You Should NEVER Eat Bread for a Fish Bone 🦴😱 | 29.1s | ✅ Published | `stickman_fish_bone_viral.mp4`<br>`stickman_fish_bone_thumbnail.jpg` |
+| 9 | `mentos_cola_danger` | What Happens If You Eat Mentos + Cola?! 🧪😱 | 29.2s | 🟡 **Next Up (Tonight 2:30 PM EST)** | `stickman_mentos_cola_viral.mp4`<br>`stickman_mentos_cola_thumbnail.jpg` |
 
 ---
 

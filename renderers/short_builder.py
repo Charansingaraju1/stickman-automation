@@ -63,51 +63,32 @@ SHORT_CONFIGS = {
         "seed": 88,
         "hook_sfx": "squelch",
     },
-    "splinter_tweezers": {
-        "title": "StickNation 3D Splinter Hazard",
-        "output_mp4": "stickman_splinter_viral.mp4",
-        "assets_subdir": "splinter_tweezers",
+    "mentos_cola": {
+        "title": "StickNation 3D Mentos + Cola Explosion",
+        "output_mp4": "stickman_mentos_cola_viral.mp4",
+        "assets_subdir": "mentos_cola",
+        "voice_rate": "+18%",
+        "sub_margin_v": 480,
         "lines": [
-            ("NARRATOR", "Pinching a stubborn splinter with metal tweezers crushes the wood tip and drives jagged fragments deeper under your skin.", "1", "alert", 0.08, "&H003838FF&", "TRAUMA: SUBDERMAL SHAFT SHATTER"),
-            ("NARRATOR", "Instead of sliding out cleanly, squeezing forces splintered wood straight past living nerve fibers and tiny blood capillaries.", "2", "doc", 0.08, "&H0000E6FF&", "ANATOMY: DERMAL NERVE & CAPILLARY BED"),
-            ("NARRATOR", "Even microscopic wood chips carry fungal spores and aggressive bacteria directly into warm dermal tissue.", "3", "alert", 0.08, "&H003838FF&", "REACTION: MACROPHAGE SWELLING"),
-            ("NARRATOR", "Within days, your immune system walls off the trapped debris inside a throbbing, pus-filled deep skin abscess.", "4", "panic", 0.10, "&H003838FF&", "INFECTION: SUBCUTANEOUS ABSCESS"),
-            ("NARRATOR", "Instead, sterilize a fine needle edge and gently flick the entry tunnel open along the exact angle it entered.", "5", "doc", 0.08, "&H0000FFF0&", "SAFE PROTOCOL: STERILE ENTRY LIFT"),
-            ("NARRATOR", "So next time a splinter slips beneath your fingertip...", "6", "loop", 0.05, None, None),
+            ("NARRATOR", "Everyone swears Mentos and cola will literally explode your stomach like a soda volcano.", "1", "alert", 0.05, "&H003838FF&", "HAZARD: CO2 FOAM EXPLOSION"),
+            ("NARRATOR", "Drop them together, and millions of microscopic pits on each mint rip dissolved gas loose instantly.", "2", "doc", 0.05, "&H0000E6FF&", "TEST: NUCLEATION SURGE"),
+            ("NARRATOR", "In an open bottle it shoots ten feet high, but inside your sealed gut, foam stacks fast.", "3", "doc", 0.05, "&H0000E6FF&", "ANATOMY: TRAPPED CO2 POCKET"),
+            ("NARRATOR", "Expanding gas inflates your stomach walls tighter and tighter like an overfilled balloon.", "4", "alert", 0.05, "&H003838FF&", "PRESSURE: GASTRIC WALL STRETCH"),
+            ("NARRATOR", "Before your stomach ever pops, violent belly cramps blast a fizzy foam geyser straight back up!", "5", "panic", 0.07, "&H003838FF&", "REFLEX: VOLCANIC FOAM BURP"),
+            ("NARRATOR", "Chugging a huge batch still risks painful spasms or tearing your throat lining during violent vomiting...", "6", "doc", 0.05, "&H0000FFF0&", "RISK: ESOPHAGEAL TISSUE TEAR"),
+            ("NARRATOR", "so next time someone dares you with a full bottle...", "7", "loop", 0.04, None, None),
         ],
         "visuals": [
-            ("scene_1_macro.jpg", "1", "hook_punch"),
-            ("scene_2_crush.jpg", "2", "pan"),
-            ("scene_3_infection.jpg", "3", "zoom"),
-            ("scene_3_infection.jpg", "4", "shake"),
-            ("scene_4_safe_lift.jpg", "5", "pan"),
-            ("scene_1_macro.jpg", "6", "push"),
+            ("scene_3_eruption.jpg", "1", "hook_punch"),
+            ("scene_2_gulp.jpg", "2", "zoom"),
+            ("scene_1_stomach_shock.jpg", "3", "pan"),
+            ("scene_3_eruption.jpg", "4", "shake"),
+            ("scene_4_geyser_burp.jpg", "5", "shake"),
+            ("scene_1_stomach_shock.jpg", "6", "push"),
+            ("scene_2_gulp.jpg", "7", "zoom"),
         ],
-        "seed": 95,
-        "hook_sfx": "crunch",
-    },
-    "superglue_eyes": {
-        "title": "StickNation 3D Superglue Eyelids",
-        "output_mp4": "stickman_superglue_eyes_viral.mp4",
-        "assets_subdir": "superglue_eyes",
-        "lines": [
-            ("NARRATOR", "A single drop of super glue in your eye reacts instantly with tear moisture, cementing your eyelids shut like concrete.", "1", "alert", 0.08, "&H003838FF&", "EMERGENCY: CYANOACRYLATE POLYMER BOND"),
-            ("NARRATOR", "Panicking and trying to peel your glued lashes open exerts enough force to rip living tissue clean off the eyelid.", "2", "doc", 0.08, "&H0000E6FF&", "MECHANISM: INSTANT MOISTURE CURE"),
-            ("NARRATOR", "Even worse, hardened glue flakes scrape across your delicate cornea with every frantic blink like jagged glass.", "3", "alert", 0.08, "&H003838FF&", "INJURY: CORNEAL EPITHELIAL ABRASION"),
-            ("NARRATOR", "Prying prematurely can scratch your eye surface permanently and trigger painful emergency corneal scarring.", "4", "panic", 0.10, "&H003838FF&", "RISK: PERMANENT CORNEAL SCARRING"),
-            ("NARRATOR", "Instead, doctors flush continuously with warm water and coat the bond in thick ointment until the glue releases naturally.", "5", "doc", 0.08, "&H0000FFF0&", "SAFE PROTOCOL: OPHTHALMIC OINTMENT"),
-            ("NARRATOR", "So if cyanoacrylate mist ever splashes near your eyes...", "6", "loop", 0.05, None, None),
-        ],
-        "visuals": [
-            ("scene_1_macro_eye.jpg", "1", "hook_punch"),
-            ("scene_2_bond.jpg", "2", "pan"),
-            ("scene_3_cornea.jpg", "3", "zoom"),
-            ("scene_3_cornea.jpg", "4", "shake"),
-            ("scene_4_ointment.jpg", "5", "pan"),
-            ("scene_1_macro_eye.jpg", "6", "push"),
-        ],
-        "seed": 103,
-        "hook_sfx": "squelch",
+        "seed": 112,
+        "hook_sfx": "fizz",
     },
 }
 
@@ -192,6 +173,11 @@ def build_audio_mix(vo, total_dur, scene_starts, cfg):
             crackle = rng.normal(0, 1, nt) * bursts * np.exp(-tt * 5.0)
             snap = np.sin(2 * np.pi * 920 * tt) * np.exp(-tt * 28.0)
             return crackle * 0.65 + snap * 0.40
+        elif kind == "fizz":
+            sizzle = np.diff(rng.normal(0, 1, nt), prepend=0.0) * 0.42
+            pops = rng.normal(0, 1, nt) * (rng.random(nt) > 0.92).astype(np.float32) * 1.6
+            rise = np.sin(2 * np.pi * np.cumsum(np.linspace(180, 620, nt)) / SR) * 0.28
+            return (sizzle + pops + rise) * np.exp(-tt * 2.5)
         else:
             # Wet piston squelch + sub thud
             f = np.linspace(480, 120, nt)
@@ -242,7 +228,7 @@ def build_ass_subtitles(timeline_words, ref_intervals, total_dur, cfg):
         "",
         "[V4+ Styles]",
         "Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding",
-        "Style: Default,Impact,92,&H00FFFFFF,&H0000E6FF,&H00000000,&H80000000,-1,0,0,0,100,100,2,0,1,10,5,2,60,110,760,1",
+        f"Style: Default,Impact,92,&H00FFFFFF,&H0000E6FF,&H00000000,&H80000000,-1,0,0,0,100,100,2,0,1,10,5,2,60,110,{cfg.get('sub_margin_v', 760)},1",
         "Style: RefTag,Arial,36,&H00FFFFFF,&H00FFFFFF,&H00000000,&HB0000000,-1,0,0,0,100,100,2,0,3,14,0,8,50,50,140,1",
         "",
         "[Events]",
@@ -303,7 +289,7 @@ async def render_short(short_key):
 
         # Continuous adult clinical narrator voice (calibrated for 25-44 demographic)
         voice = "en-US-ChristopherNeural"
-        rate = "+10%"
+        rate = cfg.get("voice_rate", "+10%")
         pitch = "+0Hz"
 
         print(f"  Synthesizing Line {idx}: {text}")

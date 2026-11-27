@@ -11,8 +11,7 @@ on:
         options:
           - qtip_ear
           - fish_bone
-          - splinter_tweezers
-          - superglue_eyes
+          - mentos_cola
 
 jobs:
   render_video:
