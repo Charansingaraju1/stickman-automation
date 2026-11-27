@@ -204,25 +204,6 @@ VIRAL_QUEUE = [
             "anatomy",
             "science"
         ]
-    },
-    {
-        "id": "mentos_cola_danger",
-        "filenames": ["stickman_mentos_cola_viral.mp4"],
-        "thumbnail": "stickman_mentos_cola_thumbnail.jpg",
-        "pinned_comment": "Be honest: would you EVER actually test Mentos + Cola at the same time after seeing this? 🧪🥤👇 (Or have you tried a mini sip?)",
-        "title": "What Happens If You Eat Mentos + Cola?! 🧪😱 #shorts",
-        "description": "What actually happens inside your stomach if you swallow Mentos mints and chug carbonated cola together? Millions of microscopic mint nucleation pits trigger rapid CO2 foam expansion against gastric walls. #shorts #medical #anatomy",
-        "tags": [
-            "mentos and coke in stomach",
-            "what happens if you eat mentos and drink soda",
-            "mentos cola stomach explosion myth",
-            "gastric CO2 foam pressure 3d",
-            "stickman medical animation",
-            "shorts",
-            "medical",
-            "anatomy",
-            "science"
-        ]
     }
 ]
 
