@@ -8,7 +8,6 @@ import {
   useCurrentFrame,
   useVideoConfig,
 } from "remotion";
-import { Stickman } from "./components/Stickman";
 
 export interface SceneBeat {
   startSec: number;
@@ -52,8 +51,8 @@ export interface CloudShortProps {
 
 const MODE_COLOR: Record<string, string> = {
   alert: "#FF3B30",
-  panic: "#FF453A",
-  doc: "#00D4FF",
+  panic: "#FF3B30",
+  doc: "#00E5FF",
   loop: "#FFD60A",
 };
 
@@ -62,14 +61,14 @@ const AnimatedOverlayFx: React.FC<{ fx: SceneBeat["fx"]; frame: number }> = ({ f
     const scanY = (frame * 26) % 1920;
     return (
       <svg width={1080} height={1920} style={{ position: "absolute", inset: 0, pointerEvents: "none" }}>
-        <rect x={0} y={scanY} width={1080} height={14} fill="#00E5FF" opacity={0.45} />
+        <rect x={0} y={scanY} width={1080} height={12} fill="#00E5FF" opacity={0.42} />
         <circle
           cx={540}
           cy={940}
           r={120 + (frame % 20) * 14}
           fill="none"
           stroke="#00E5FF"
-          strokeWidth={6}
+          strokeWidth={5}
           opacity={Math.max(0, 1 - (frame % 20) / 20)}
         />
       </svg>
@@ -79,9 +78,9 @@ const AnimatedOverlayFx: React.FC<{ fx: SceneBeat["fx"]; frame: number }> = ({ f
     const col = fx === "toxic" ? "#C0FF33" : fx === "seed" ? "#34D399" : "#FFFFFF";
     return (
       <svg width={1080} height={1920} style={{ position: "absolute", inset: 0, pointerEvents: "none" }}>
-        {[0, 1, 2, 3, 4, 5].map((i) => {
+        {[0, 1, 2, 3, 4].map((i) => {
           const t = (frame * 1.6 + i * 11) % 36;
-          const r = 20 + t * 9;
+          const r = 18 + t * 8;
           const cy = 980 - i * 38 + Math.sin(frame * 0.25 + i) * 28;
           const cx = 360 + ((i * 113) % 360);
           return (
@@ -92,33 +91,28 @@ const AnimatedOverlayFx: React.FC<{ fx: SceneBeat["fx"]; frame: number }> = ({ f
               r={r}
               fill="none"
               stroke={col}
-              strokeWidth={5}
-              opacity={Math.max(0, 0.7 - t / 36)}
+              strokeWidth={4}
+              opacity={Math.max(0, 0.55 - t / 36)}
             />
           );
         })}
       </svg>
     );
   }
-  if (fx === "crack" || fx === "fire" || fx === "steam") {
-    const col = fx === "fire" ? "#FF6B00" : fx === "steam" ? "#E2E8F0" : "#FF3B30";
+  if (fx === "fire" || fx === "steam") {
+    const col = fx === "fire" ? "#FF6B00" : "#94A3B8";
     return (
       <svg width={1080} height={1920} style={{ position: "absolute", inset: 0, pointerEvents: "none" }}>
         {[0, 1, 2, 3].map((i) => {
-          const ang = (i * 90 + 35 + frame * 2) * (Math.PI / 180);
-          const d0 = 90 + (frame % 12) * 10;
-          const d1 = d0 + 60;
+          const drift = ((frame * 5 + i * 35) % 140);
           return (
-            <line
+            <circle
               key={i}
-              x1={540 + Math.cos(ang) * d0}
-              y1={760 + Math.sin(ang) * d0}
-              x2={540 + Math.cos(ang) * d1}
-              y2={760 + Math.sin(ang) * d1}
-              stroke={col}
-              strokeWidth={10}
-              strokeLinecap="round"
-              opacity={0.75}
+              cx={480 + Math.sin(frame * 0.15 + i) * 65}
+              cy={880 - drift}
+              r={18 + drift * 0.15}
+              fill={col}
+              opacity={Math.max(0, 0.32 - drift / 350)}
             />
           );
         })}
@@ -128,128 +122,136 @@ const AnimatedOverlayFx: React.FC<{ fx: SceneBeat["fx"]; frame: number }> = ({ f
   return null;
 };
 
-const ScenarioPropSvg: React.FC<{ fx: SceneBeat["fx"]; localFrame: number }> = ({ fx, localFrame }) => {
-  const pulse = 1 + 0.08 * Math.sin(localFrame * 0.45);
-  const propsMap: Partial<Record<SceneBeat["fx"], React.ReactNode>> = {
-    crack: (
-      <g transform={`translate(560, 1080) scale(${pulse})`}>
-        <path d="M-24 20 L0 -65 L28 -10 L62 -72" fill="none" stroke="#FF3B30" strokeWidth={12} strokeLinecap="round" />
-        <circle cx={0} cy={0} r={34} fill="none" stroke="#111827" strokeWidth={8} />
-      </g>
-    ),
-    steam: (
-      <g transform="translate(565, 1140)">
-        <rect x={-48} y={-55} width={96} height={110} rx={16} fill="#334155" stroke="#0F172A" strokeWidth={6} />
-        <rect x={-30} y={-20} width={60} height={60} rx={8} fill="#86EFAC" />
-        <path d={`M-15 -70 Q${-35 + Math.sin(localFrame * 0.3) * 14} -115 -10 -150`} fill="none" stroke="#94A3B8" strokeWidth={8} strokeLinecap="round" />
-        <path d={`M18 -70 Q${35 - Math.sin(localFrame * 0.3) * 14} -115 15 -150`} fill="none" stroke="#94A3B8" strokeWidth={8} strokeLinecap="round" />
-      </g>
-    ),
-    seed: (
-      <g transform={`translate(570, 1120) scale(${pulse})`}>
-        <path d="M-65 30 A70 70 0 0 0 65 30 Z" fill="#EF4444" stroke="#15803D" strokeWidth={12} />
-        <ellipse cx={0} cy={-40 + ((localFrame * 8) % 60)} rx={9} ry={15} fill="#111827" />
-      </g>
-    ),
-    toxic: (
-      <g transform="translate(575, 1135)">
-        <rect x={-55} y={-40} width={44} height={90} rx={8} fill="#38BDF8" stroke="#0F172A" strokeWidth={5} />
-        <rect x={12} y={-40} width={44} height={90} rx={8} fill="#FACC15" stroke="#0F172A" strokeWidth={5} />
-        <circle cx={0} cy={-85 - (localFrame % 16) * 4} r={24 + (localFrame % 16) * 2} fill="#BEF264" opacity={0.75} />
-      </g>
-    ),
-    fire: (
-      <g transform={`translate(565, 1140) scale(${pulse})`}>
-        <ellipse cx={0} cy={45} rx={72} ry={18} fill="#1F2937" />
-        <path d="M-32 40 Q-50 -45 0 -105 Q50 -45 32 40 Z" fill="#F97316" />
-        <path d="M-16 40 Q-25 -15 0 -62 Q25 -15 16 40 Z" fill="#FACC15" />
-      </g>
-    ),
-    chill: (
-      <g transform={`translate(570, 1130) scale(${pulse})`}>
-        <path d="M-12 -55 C25 -45 42 5 22 55 C5 20 -25 5 -12 -55 Z" fill="#DC2626" />
-        <circle cx={40} cy={-35 + (localFrame % 18) * 3} r={12} fill="#38BDF8" />
-      </g>
-    ),
-    sleep: (
-      <g transform="translate(565, 1135)">
-        <rect x={-55} y={-20} width={40} height={60} rx={6} fill="#78350F" stroke="#111827" strokeWidth={5} />
-        <rect x={0} y={-20} width={40} height={60} rx={6} fill="#78350F" stroke="#111827" strokeWidth={5} />
-        <text x={-10} y={-55 - (localFrame % 20)} fill="#EF4444" fontSize={42} fontWeight={900}>Zzz</text>
-      </g>
-    ),
-  };
-  return <>{propsMap[fx] || null}</>;
-};
-
-const StickmanComedyStage: React.FC<{
-  scene: SceneBeat;
+// Matte-white 3D-shaded Stickman figure matching StickNation's cinema house look
+const Matte3DStickman: React.FC<{
+  pose: SceneBeat["pose"];
   localFrame: number;
-  bgHex: string;
-  accentHex: string;
-}> = ({ scene, localFrame, bgHex, accentHex }) => {
-  const popScale = spring({ frame: localFrame, fps: 30, config: { damping: 12, stiffness: 220 } });
-  const bounceY = Math.sin(localFrame * 0.35) * 12;
-  const friendDropY = Math.min(180, localFrame * 12);
-  const friendRot = Math.min(68, localFrame * 3.6);
-  const showCallout = Boolean(scene.callout && scene.callout.toUpperCase() !== (scene.label || "").toUpperCase());
+  shock?: boolean;
+}> = ({ pose, localFrame, shock = false }) => {
+  const headBob = Math.sin(localFrame * 0.35) * 10;
+  const lean = pose === "charge" || pose === "kneel" ? 14 : 0;
+  const armUp = pose === "pull_door" || pose === "look_up" || shock;
 
   return (
-    <AbsoluteFill style={{ backgroundColor: bgHex }}>
+    <g transform={`translate(540, ${1140 + headBob}) rotate(${lean})`}>
+      <defs>
+        <radialGradient id="stick3dHead" cx="38%" cy="32%" r="68%">
+          <stop offset="0%" stopColor="#FFFFFF" />
+          <stop offset="68%" stopColor="#E2E8F0" />
+          <stop offset="100%" stopColor="#94A3B8" />
+        </radialGradient>
+        <linearGradient id="stick3dLimb" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stopColor="#FFFFFF" />
+          <stop offset="60%" stopColor="#CBD5E1" />
+          <stop offset="100%" stopColor="#64748B" />
+        </linearGradient>
+      </defs>
+
+      {/* Legs */}
+      <path d="M-24 -160 L-58 -60 L-75 40" fill="none" stroke="url(#stick3dLimb)" strokeWidth={34} strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M24 -160 L58 -60 L75 40" fill="none" stroke="url(#stick3dLimb)" strokeWidth={34} strokeLinecap="round" strokeLinejoin="round" />
+
+      {/* Torso */}
+      <rect x={-44} y={-340} width={88} height={195} rx={44} fill="url(#stick3dHead)" />
+
+      {/* Arms */}
+      <path
+        d={armUp ? "M-38 -310 L-105 -250 L-85 -190" : "M-38 -310 L-82 -215 L-65 -140"}
+        fill="none"
+        stroke="url(#stick3dLimb)"
+        strokeWidth={30}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d={armUp ? "M38 -310 L118 -275 L92 -215" : "M38 -310 L82 -215 L65 -140"}
+        fill="none"
+        stroke="url(#stick3dLimb)"
+        strokeWidth={30}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+
+      {/* Rounded 3D Head + Expressive Eyes */}
+      <circle cx={0} cy={-445} r={108} fill="url(#stick3dHead)" />
+      {/* Brows */}
+      <path d="M-54 -488 Q-32 -504 -12 -486" fill="none" stroke="#1E293B" strokeWidth={10} strokeLinecap="round" />
+      <path d="M12 -486 Q34 -504 54 -488" fill="none" stroke="#1E293B" strokeWidth={10} strokeLinecap="round" />
+      {/* Eyes */}
+      <ellipse cx={-34} cy={-452} rx={22} ry={shock ? 28 : 24} fill="#FFFFFF" stroke="#94A3B8" strokeWidth={3} />
+      <ellipse cx={34} cy={-452} rx={22} ry={shock ? 28 : 24} fill="#FFFFFF" stroke="#94A3B8" strokeWidth={3} />
+      <circle cx={-30} cy={-450} r={9} fill="#0F172A" />
+      <circle cx={38} cy={-450} r={9} fill="#0F172A" />
+      {/* Mouth */}
+      {shock ? (
+        <ellipse cx={0} cy={-392} rx={26} ry={22} fill="#1E293B" />
+      ) : (
+        <path d="M-26 -394 Q0 -380 26 -396" fill="none" stroke="#1E293B" strokeWidth={9} strokeLinecap="round" />
+      )}
+    </g>
+  );
+};
+
+const DarkScenarioProp: React.FC<{ fx: SceneBeat["fx"]; localFrame: number }> = ({ fx, localFrame }) => {
+  const pulse = 1 + 0.08 * Math.sin(localFrame * 0.45);
+  if (fx === "seed") {
+    return (
+      <g transform={`translate(760, 860) scale(${pulse})`}>
+        <ellipse cx={0} cy={0} rx={82} ry={108} fill="none" stroke="#FF6B6B" strokeWidth={14} opacity={0.88} />
+        <ellipse cx={0} cy={35} rx={64} ry={58} fill="#84CC16" opacity={0.55} />
+        <ellipse cx={0} cy={-20 + (localFrame * 4) % 55} rx={12} ry={20} fill="#111827" stroke="#FFFFFF" strokeWidth={3} />
+      </g>
+    );
+  }
+  if (fx === "steam") {
+    return (
+      <g transform={`translate(765, 870) scale(${pulse})`}>
+        <rect x={-64} y={-70} width={128} height={140} rx={20} fill="#1E293B" stroke="#00E5FF" strokeWidth={6} />
+        <rect x={-42} y={-32} width={84} height={80} rx={10} fill="#22C55E" opacity={0.8} />
+      </g>
+    );
+  }
+  if (fx === "toxic") {
+    return (
+      <g transform={`translate(765, 870) scale(${pulse})`}>
+        <circle cx={0} cy={0} r={85} fill="#84CC16" opacity={0.25} />
+        <rect x={-52} y={-40} width={44} height={92} rx={8} fill="#38BDF8" />
+        <rect x={10} y={-40} width={44} height={92} rx={8} fill="#FACC15" />
+      </g>
+    );
+  }
+  return null;
+};
+
+const StickmanCinemaStage: React.FC<{
+  scene: SceneBeat;
+  localFrame: number;
+  accentHex: string;
+}> = ({ scene, localFrame, accentHex }) => {
+  const popScale = spring({ frame: localFrame, fps: 30, config: { damping: 14, stiffness: 210 } });
+
+  return (
+    <AbsoluteFill style={{ backgroundColor: "#0B1120" }}>
       <svg width={1080} height={1920} viewBox="0 0 1080 1920">
-        {/* Elevated stage horizon so bottom safe-zone captions NEVER collide with characters */}
-        <rect x={0} y={1160} width={1080} height={760} fill="#F1F5F9" />
-        <line x1={0} y1={1160} x2={1080} y2={1160} stroke="#CBD5E1" strokeWidth={6} />
-
-        {/* Dynamic background accent halo */}
-        <circle cx={540} cy={780} r={330 + Math.sin(localFrame * 0.25) * 18} fill={accentHex} opacity={0.14} />
-
-        {/* Fainting buddy stickman in background */}
-        <g transform={`translate(790, ${1160 + friendDropY * 0.22}) rotate(${friendRot}, 0, -180)`}>
-          <Stickman x={0} y={0} pose="kneel" facing="left" dizzy scale={0.95} />
+        <defs>
+          <radialGradient id="cinemaSpotlight" cx="50%" cy="46%" r="58%">
+            <stop offset="0%" stopColor="#1E293B" />
+            <stop offset="65%" stopColor="#0F172A" />
+            <stop offset="100%" stopColor="#050811" />
+          </radialGradient>
+        </defs>
+        <rect x={0} y={0} width={1080} height={1920} fill="url(#cinemaSpotlight)" />
+        <ellipse cx={540} cy={1210} rx={360} ry={48} fill={accentHex} opacity={0.18} />
+        <g transform={`scale(${0.96 + 0.08 * popScale})`} style={{ transformOrigin: "540px 960px" }}>
+          <Matte3DStickman pose={scene.pose} localFrame={localFrame} shock={scene.motion === "shake" || scene.motion === "hook_punch"} />
         </g>
-
-        {/* Lead Stickman center-left stage cleanly above captions */}
-        <g transform={`translate(390, ${1180 + bounceY}) scale(${1.12 + 0.14 * popScale})`}>
-          <Stickman
-            x={0}
-            y={0}
-            pose={scene.pose}
-            walkCycle={localFrame * 0.45}
-            facing="right"
-            sweat={scene.motion === "shake" || scene.fx === "fire"}
-            dizzy={scene.fx === "sleep"}
-            scale={1.12}
-          />
-        </g>
-
-        <g transform="translate(0, -190)">
-          <ScenarioPropSvg fx={scene.fx} localFrame={localFrame} />
-        </g>
-
-        {showCallout && (
-          <g transform={`translate(540, ${380 - popScale * 16})`}>
-            <rect x={-280} y={-50} width={560} height={100} rx={22} fill="#111827" />
-            <text
-              x={0}
-              y={14}
-              textAnchor="middle"
-              fill={accentHex}
-              fontFamily="Arial Black, Impact, sans-serif"
-              fontSize={44}
-              fontWeight={900}
-            >
-              {scene.callout}
-            </text>
-          </g>
-        )}
+        <DarkScenarioProp fx={scene.fx} localFrame={localFrame} />
       </svg>
     </AbsoluteFill>
   );
 };
 
 export const CloudShort: React.FC<CloudShortProps> = ({
-  bgHex,
   accentHex,
   scenes,
   words,
@@ -258,7 +260,7 @@ export const CloudShort: React.FC<CloudShortProps> = ({
   const { fps, durationInFrames } = useVideoConfig();
   const t = frame / fps;
 
-  // Determine current active scene beat (cut cleanly back to Scene 0 on final 0.45s for seamless feed loop!)
+  // Seamless feed loop: cut back cleanly to Frame 0 scene right before end
   const loopCutoff = Math.max(0, durationInFrames / fps - 0.45);
   let activeIdx = scenes.findIndex((s) => t >= s.startSec && t < s.endSec);
   if (activeIdx < 0) activeIdx = Math.max(0, scenes.length - 1);
@@ -267,7 +269,6 @@ export const CloudShort: React.FC<CloudShortProps> = ({
   const scene = scenes[activeIdx];
   const localFrame = Math.max(0, Math.round((t - scene.startSec) * fps));
 
-  // Punchy Frame-0 / cut motion curves
   let scale = 1.0;
   let tx = 0;
   let ty = 0;
@@ -283,7 +284,6 @@ export const CloudShort: React.FC<CloudShortProps> = ({
     scale = interpolate(localFrame, [0, 90], [1.14, 1.0], { extrapolateRight: "clamp" });
   }
 
-  // Group word timings into 3-word punch chunks matching ASS safe zone
   const activeChunk = React.useMemo(() => {
     const chunks: WordTiming[][] = [];
     let cur: WordTiming[] = [];
@@ -299,7 +299,7 @@ export const CloudShort: React.FC<CloudShortProps> = ({
   }, [words, t]);
 
   return (
-    <AbsoluteFill style={{ backgroundColor: bgHex, overflow: "hidden" }}>
+    <AbsoluteFill style={{ backgroundColor: "#090D16", overflow: "hidden" }}>
       <AbsoluteFill
         style={{
           transform: `translate(${tx}px, ${ty}px) scale(${scale})`,
@@ -312,29 +312,38 @@ export const CloudShort: React.FC<CloudShortProps> = ({
             style={{ width: "100%", height: "100%", objectFit: "cover" }}
           />
         ) : (
-          <StickmanComedyStage scene={scene} localFrame={localFrame} bgHex={bgHex} accentHex={accentHex} />
+          <StickmanCinemaStage scene={scene} localFrame={localFrame} accentHex={accentHex} />
         )}
       </AbsoluteFill>
 
+      {/* Cinema dark radial vignette to match Mentos / Q-Tips / Fish Bone */}
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          background: "radial-gradient(circle at 50% 45%, transparent 48%, rgba(5,8,16,0.55) 100%)",
+          pointerEvents: "none",
+        }}
+      />
+
       <AnimatedOverlayFx fx={scene.fx} frame={localFrame} />
 
-      {/* Crisp top diagnostic pill */}
+      {/* Clean signature RefTag matching short_builder.py style */}
       {scene.label && (
         <div
           style={{
             position: "absolute",
-            top: 120,
+            top: 135,
             left: "50%",
             transform: "translateX(-50%)",
-            backgroundColor: "rgba(17, 24, 39, 0.86)",
-            border: `4px solid ${scene.labelColor || accentHex}`,
-            color: scene.labelColor || "#FFFFFF",
-            padding: "10px 26px",
-            borderRadius: 12,
+            backgroundColor: "rgba(0, 0, 0, 0.72)",
+            color: scene.labelColor || "#00E5FF",
+            padding: "8px 22px",
+            borderRadius: 6,
             fontFamily: "Arial Black, Impact, sans-serif",
             fontSize: 34,
             fontWeight: 900,
-            letterSpacing: 1.2,
+            letterSpacing: 1.5,
             whiteSpace: "nowrap",
           }}
         >
@@ -342,12 +351,12 @@ export const CloudShort: React.FC<CloudShortProps> = ({
         </div>
       )}
 
-      {/* Word-by-word safe-zone kinetic captions */}
+      {/* Unified Impact safe-zone word captions */}
       {activeChunk.length > 0 && (
         <div
           style={{
             position: "absolute",
-            bottom: 360,
+            bottom: 430,
             left: 56,
             right: 110,
             display: "flex",
@@ -358,16 +367,16 @@ export const CloudShort: React.FC<CloudShortProps> = ({
         >
           {activeChunk.map((w, idx) => {
             const isNow = t >= w.start && t <= w.end + 0.1;
-            const col = isNow ? MODE_COLOR[w.mode] || accentHex : t > w.end ? "#FFFFFF" : "#D1D5DB";
+            const col = isNow ? MODE_COLOR[w.mode] || "#FFD60A" : t > w.end ? "#FFFFFF" : "#A1A1AA";
             return (
               <span
                 key={`${w.start}-${idx}`}
                 style={{
                   fontFamily: "Impact, Arial Black, sans-serif",
-                  fontSize: isNow ? 88 : 78,
+                  fontSize: isNow ? 94 : 84,
                   color: col,
                   WebkitTextStroke: "5px #000000",
-                  textShadow: "0 8px 18px rgba(0,0,0,0.85)",
+                  textShadow: "0 8px 18px rgba(0,0,0,0.92)",
                   lineHeight: 1.05,
                 }}
               >

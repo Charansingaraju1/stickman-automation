@@ -283,7 +283,7 @@ def send_c_assistant_daily_brief(scenario: str = "hotel_kettle", offline: bool =
         f"📋 Daily Update — C Assistant\n\n"
         f"📱 Social Manager (@StickNationDaily): {subs} | {views}\n"
         f"🏆 Top Short: {top_title}\n"
-        f"⏰ Publisher Slots: 3x/day US Peak (6:30a / 2:30p / 7:30p EST) | {ready_cnt} queued\n"
+        f"⏰ Publisher Slot: 2:30 PM EST daily (1/day) | {ready_cnt} queued\n"
         f"✍️ Script + Review ({crew['publisher_review']['score']}/100 APV-ready): {crew['scout']['title']}\n"
         f"💬 Deadpan Hook: \"{crew['scout']['deadpan_line']}\"\n"
         f"💸 Billing Guard: $0.00 (Free Cloud Only)\n\n"

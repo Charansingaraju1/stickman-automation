@@ -57,7 +57,7 @@
   },
   {
     "id": "watermelon_seed_myth",
-    "contains_synthetic_media": false,
+    "contains_synthetic_media": true,
     "filenames": [
       "stickman_watermelon_seed_viral.mp4"
     ],

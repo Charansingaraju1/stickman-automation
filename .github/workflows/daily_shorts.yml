@@ -2,10 +2,8 @@ name: Daily Automated YouTube Shorts
 
 on:
   schedule:
-    # 3 high-velocity peak US windows/day ($0 GitHub Actions public runner) — uploads only when approved queue is stocked
-    - cron: '30 11 * * *' # 6:30 AM EST = 5:00 PM IST
+    # 1 upload per day at peak US window (2:30 PM EST = 1:00 AM IST next day) per Boss's request
     - cron: '30 19 * * *' # 2:30 PM EST = 1:00 AM IST next day
-    - cron: '30 0 * * *'  # 7:30 PM EST = 6:00 AM IST next day
   workflow_dispatch: # Allows manual 1-click trigger anytime from GitHub UI
 
 jobs:

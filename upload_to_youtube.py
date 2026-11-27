@@ -375,9 +375,33 @@ def upload_next_in_queue(dry_run=False):
     print("All queued videos have been uploaded!")
     return None
 
+def refresh_auth_token():
+    """Run local browser OAuth flow with youtube.upload + youtube.force-ssl scopes for GitHub secret update."""
+    if not os.path.exists(CLIENT_SECRETS_FILE):
+        raise FileNotFoundError(
+            f"Missing {CLIENT_SECRETS_FILE}. Download OAuth Desktop JSON from Google Cloud Console first."
+        )
+    flow = InstalledAppFlow.from_client_secrets_file(
+        CLIENT_SECRETS_FILE,
+        [
+            "https://www.googleapis.com/auth/youtube.upload",
+            "https://www.googleapis.com/auth/youtube.force-ssl",
+        ],
+    )
+    creds = flow.run_local_server(port=0)
+    token_json = creds.to_json()
+    with open(TOKEN_FILE, "w", encoding="utf-8") as f:
+        f.write(token_json)
+    print("\nSUCCESS: Saved token.json locally with full upload + comment scopes.")
+    print("Copy the JSON printed below into GitHub Repo Secret -> YOUTUBE_TOKEN_JSON:\n")
+    print(token_json)
+
+
 if __name__ == "__main__":
     if "--status" in sys.argv:
         print_queue_status()
+    elif "--auth" in sys.argv or "--setup-auth" in sys.argv:
+        refresh_auth_token()
     elif "--dry-run" in sys.argv:
         upload_next_in_queue(dry_run=True)
     else:
