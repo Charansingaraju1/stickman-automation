@@ -26,7 +26,8 @@ def send_telegram_alert(text):
 def get_authenticated_service():
     creds = None
     if os.path.exists(TOKEN_FILE):
-        creds = Credentials.from_authorized_user_file(TOKEN_FILE, SCOPES)
+        # Load scopes embedded in token.json so adding broader scopes doesn't break existing refresh tokens
+        creds = Credentials.from_authorized_user_file(TOKEN_FILE)
     if creds and creds.expired and creds.refresh_token:
         from google.auth.transport.requests import Request
         creds.refresh(Request())
@@ -34,7 +35,10 @@ def get_authenticated_service():
             token.write(creds.to_json())
     elif not creds or not creds.valid:
         if os.path.exists(CLIENT_SECRETS_FILE):
-            flow = InstalledAppFlow.from_client_secrets_file(CLIENT_SECRETS_FILE, SCOPES)
+            flow = InstalledAppFlow.from_client_secrets_file(
+                CLIENT_SECRETS_FILE,
+                ["https://www.googleapis.com/auth/youtube.upload", "https://www.googleapis.com/auth/youtube.force-ssl"],
+            )
             creds = flow.run_local_server(port=0)
             with open(TOKEN_FILE, "w") as token:
                 token.write(creds.to_json())
@@ -42,7 +46,7 @@ def get_authenticated_service():
             raise RuntimeError("No valid credentials or client_secret.json found!")
     return build("youtube", "v3", credentials=creds)
 
-def upload_video(file_path, title, description, tags=None, privacy="public", thumbnail_path=None, comment_text=None):
+def upload_video(file_path, title, description, tags=None, privacy="public", thumbnail_path=None, comment_text=None, contains_synthetic_media=False):
     youtube = get_authenticated_service()
     body = {
         "snippet": {
@@ -53,7 +57,9 @@ def upload_video(file_path, title, description, tags=None, privacy="public", thu
         },
         "status": {
             "privacyStatus": privacy,
-            "selfDeclaredMadeForKids": False
+            "selfDeclaredMadeForKids": False,
+            # YPP disclosure for photorealistic altered/synthetic scenes when applicable
+            "containsSyntheticMedia": bool(contains_synthetic_media),
         }
     }
     media = MediaFileUpload(file_path, chunksize=-1, resumable=True, mimetype="video/mp4")
@@ -75,6 +81,8 @@ def upload_video(file_path, title, description, tags=None, privacy="public", thu
         except Exception as e:
             print(f"Warning: Failed to set custom thumbnail: {e}")
 
+    comment_posted = False
+    comment_note = ""
     if comment_text:
         try:
             c_res = youtube.commentThreads().insert(
@@ -90,10 +98,14 @@ def upload_video(file_path, title, description, tags=None, privacy="public", thu
                     }
                 }
             ).execute()
+            comment_posted = True
             print(f"Automated top-level comment posted! ID: {c_res['id']}")
         except Exception as e:
-            print(f"Note on automated comment posting: {e}")
+            comment_note = f"Auto-comment skipped (needs youtube.force-ssl OAuth scope): {e}"
+            print(comment_note)
 
+    response["_comment_posted"] = comment_posted
+    response["_comment_note"] = comment_note
     return response
 
 VIRAL_QUEUE = [
@@ -127,6 +139,7 @@ VIRAL_QUEUE = [
     },
     {
         "id": "pimple_danger_triangle",
+        "contains_synthetic_media": True,
         "filenames": ["stickman_pimple_danger_viral.mp4"],
         "thumbnail": "stickman_pimple_danger_thumbnail.jpg",
         "pinned_comment": "Be honest: have you EVER popped a pimple in the Danger Triangle before watching this? 😳👇 (I used to do it all the time...)",
@@ -146,6 +159,7 @@ VIRAL_QUEUE = [
     },
     {
         "id": "ear_bug_tweezer_danger",
+        "contains_synthetic_media": True,
         "filenames": ["stickman_ear_bug_viral.mp4"],
         "thumbnail": "stickman_ear_bug_thumbnail.jpg",
         "pinned_comment": "Be honest: what would be your IMMEDIATE reaction if an insect crawled in your ear? 🪲😱👇 (Tweezers, Q-tip, or ER?)",
@@ -166,6 +180,7 @@ VIRAL_QUEUE = [
     },
     {
         "id": "qtip_eardrum_danger",
+        "contains_synthetic_media": True,
         "filenames": ["stickman_qtip_viral.mp4"],
         "thumbnail": "stickman_qtip_thumbnail.jpg",
         "pinned_comment": "Be honest: do you STILL clean your ears with Q-tips after seeing this? 🚫👂👇 (Did it ever hurt your eardrum?)",
@@ -187,6 +202,7 @@ VIRAL_QUEUE = [
     },
     {
         "id": "fish_bone_bread_danger",
+        "contains_synthetic_media": True,
         "filenames": ["stickman_fish_bone_viral.mp4"],
         "thumbnail": "stickman_fish_bone_thumbnail.jpg",
         "pinned_comment": "Be honest: when a fish bone got stuck in your throat, did you try the bread trick or rush to the doctor? 🍞👇 (What actually happened?)",
@@ -256,6 +272,23 @@ def print_queue_status():
         print()
     print("=" * 70 + "\n")
 
+def validate_ypp_compliance(item, uploaded_ids):
+    """Block duplicate uploads, repetitive title templates, and thin descriptions (YPP Inauthentic Content policy)."""
+    title_norm = item["title"].strip().lower()
+    desc_words = [w for w in item["description"].split() if not w.startswith("#")]
+    if len(item["description"].strip()) < 100 or len(set(desc_words)) < 15:
+        raise ValueError(f"YPP Compliance Block [{item['id']}]: description too thin or templated.")
+
+    prior_items = [q for q in VIRAL_QUEUE if q["id"] in uploaded_ids]
+    if any(q["title"].strip().lower() == title_norm for q in prior_items):
+        raise ValueError(f"YPP Compliance Block [{item['id']}]: duplicate title already published.")
+    if prior_items:
+        prev_prefix = " ".join(prior_items[-1]["title"].lower().split()[:4])
+        cur_prefix = " ".join(title_norm.split()[:4])
+        if cur_prefix == prev_prefix and cur_prefix == "why you should never":
+            raise ValueError(f"YPP Compliance Block [{item['id']}]: consecutive 'Why You Should NEVER...' title spam.")
+
+
 def upload_next_in_queue(dry_run=False):
     queue_file = os.path.join(BASE_DIR, "uploaded_history.json")
     uploaded = []
@@ -268,6 +301,7 @@ def upload_next_in_queue(dry_run=False):
             
     for item in VIRAL_QUEUE:
         if item["id"] not in uploaded:
+            validate_ypp_compliance(item, uploaded)
             target_file = find_video_file(item["filenames"])
             if target_file:
                 thumb_file = find_video_file([item["thumbnail"]]) if item.get("thumbnail") else None
@@ -279,7 +313,15 @@ def upload_next_in_queue(dry_run=False):
                     print("[DRY RUN] Simulation complete. No video was published.")
                     return {"id": "dry_run_simulation", "title": item["title"]}
                     
-                res = upload_video(target_file, item["title"], item["description"], item["tags"], thumbnail_path=thumb_file, comment_text=item.get("pinned_comment"))
+                res = upload_video(
+                    target_file,
+                    item["title"],
+                    item["description"],
+                    item["tags"],
+                    thumbnail_path=thumb_file,
+                    comment_text=item.get("pinned_comment"),
+                    contains_synthetic_media=item.get("contains_synthetic_media", False),
+                )
                 vid_id = res.get("id")
                 uploaded.append(item["id"])
                 with open(queue_file, "w") as f:
@@ -290,7 +332,8 @@ def upload_next_in_queue(dry_run=False):
                     f"🔗 Link: https://youtube.com/shorts/{vid_id}\n\n"
                 )
                 if item.get("pinned_comment"):
-                    alert += f"📌 Recommended Pinned Comment:\n\"{item['pinned_comment']}\"\n\n"
+                    status_tag = "✅ Auto-posted on video" if res.get("_comment_posted") else "⚠️ Needs manual post (refresh OAuth with youtube.force-ssl scope)"
+                    alert += f"📌 Pinned Comment ({status_tag}):\n\"{item['pinned_comment']}\"\n\n"
                 alert += "Published via 100% Free Cloud Automation (0% Laptop Load)! 💪\n"
 
                 # Check remaining videos in queue

@@ -16,6 +16,10 @@ on:
           - grease_fire
           - reaper_water
           - superglue_shirt
+          - knuckle_cracking
+          - watermelon_seed
+          - nosebleed_tilt
+          - stay_awake
 
 permissions:
   contents: read

@@ -27,6 +27,7 @@ STUDIO_VALIDATED_BRIEFS: dict[str, dict[str, str]] = {
         "mistake_hook": "Stickman pours hotel electric kettle straight into a mug, takes a confident sip, freezes one eyebrow raised.",
         "deadpan_line": "Hmm. Savory.",
         "twist_7s": "Snap-zoom inside glowing heating coil as submerged fabric fibers bubble into green sock soup.",
+        "peak_beat": "Biofilm scales flake off the steel element straight into his mug while he stares at the lid.",
         "loop_bridge": "...so always boil and dump a hotel kettle twice because...",
     },
     "bleach_vinegar": {
@@ -35,6 +36,7 @@ STUDIO_VALIDATED_BRIEFS: dict[str, dict[str, str]] = {
         "mistake_hook": "Stickman in oversized dish gloves mixes two bottles like a proud chemist, leans in to sniff.",
         "deadpan_line": "Why does the air taste spicy?",
         "twist_7s": "Bathroom tile cuts to lung X-ray as yellow chloramine gas clouds squeeze stick-figure ribs inward.",
+        "peak_beat": "Every extra scrub stirs faster yellow vapor up the glass door until the exhaust fan rattles.",
         "loop_bridge": "...the exact second...",
     },
     "grease_fire": {
@@ -43,6 +45,7 @@ STUDIO_VALIDATED_BRIEFS: dict[str, dict[str, str]] = {
         "mistake_hook": "Stickman calmly holds a plastic cup of water over a tiny pan flame.",
         "deadpan_line": "Easy fix.",
         "twist_7s": "Macro inside pan bottom: water sinks under 400F oil, flashes 1,700x into steam, launches flaming oil volcano.",
+        "peak_beat": "Burning oil droplets rain across the stove hood in slow motion while a pot lid sits two inches away.",
         "loop_bridge": "...so never grab a cup of water when...",
     },
     "reaper_water": {
@@ -51,6 +54,7 @@ STUDIO_VALIDATED_BRIEFS: dict[str, dict[str, str]] = {
         "mistake_hook": "Sweating Stickman chugs an entire pitcher of ice water in one gulp, pauses half a second.",
         "deadpan_line": "Oh. That made it worse.",
         "twist_7s": "Tongue cross-section: water droplets bounce off oily capsaicin like bowling balls across double the pain nerves.",
+        "peak_beat": "Cold water flushes oil from the tip straight into the throat while a glass of milk waits ignored.",
         "loop_bridge": "...because water spreads the oil around while...",
     },
     "superglue_shirt": {
@@ -59,7 +63,44 @@ STUDIO_VALIDATED_BRIEFS: dict[str, dict[str, str]] = {
         "mistake_hook": "Stickman bites a metal glue tube between molars with a squeak; one drop lands on cotton t-shirt and smokes.",
         "deadpan_line": "Why is my chest warm?",
         "twist_7s": "Macro cotton weave hits 200F exothermic spark—ember grows while Stickman pats it with paper towel (making it worse).",
+        "peak_beat": "Tissue paper feeds the chemical reaction faster, turning one tiny glue drip into a smoking char ring.",
         "loop_bridge": "...because the fastest way to ignite your shirt is...",
+    },
+    "knuckle_cracking": {
+        "scenario_id": "knuckle_cracking",
+        "title": "What Actually Happens Inside Your Joints When You Crack Your Knuckles 🤔🦴 #shorts",
+        "mistake_hook": "Stickman bends all ten fingers before a quiet exam—ECHO CRACK—while everyone turns to stare.",
+        "deadpan_line": "Wait, was that bone?",
+        "twist_7s": "X-ray cut between finger joints shows dissolved gas collapsing a fluid bubble at supersonic pop speed.",
+        "peak_beat": "Joint fluid takes fifteen minutes to re-dissolve that gas before the next pop can fire.",
+        "loop_bridge": "...which is why you cannot re-crack a knuckle until...",
+    },
+    "watermelon_seed": {
+        "scenario_id": "watermelon_seed",
+        "title": "Bro Accidentally Swallowed A Watermelon Seed… 🍉😱 #shorts",
+        "mistake_hook": "Stickman swallows one black seed mid-bite and waits for a vine to sprout out his ears.",
+        "deadpan_line": "Am I a garden now?",
+        "twist_7s": "Stomach plunge: acid bath hits the hard seed coat, zero soil, zero sunlight, total false alarm.",
+        "peak_beat": "Instead of sprouting roots, the smooth hull rides straight down the digestive slide untouched.",
+        "loop_bridge": "...until the whole belly-vine rumor starts again when...",
+    },
+    "nosebleed_tilt": {
+        "scenario_id": "nosebleed_tilt",
+        "title": "Bro Tilted His Head Back During A Nosebleed… 🩸😬 #shorts",
+        "mistake_hook": "Stickman tilts his chin sky-high with tissue plugs, proud of saving his white hoodie.",
+        "deadpan_line": "Wait, wrong direction.",
+        "twist_7s": "Throat cut shows blood draining backward toward his stomach while pinching the soft nostrils forward works.",
+        "peak_beat": "Tilting up just hides the drip down your throat and stirs nausea before it spills out.",
+        "loop_bridge": "...instead of leaning slightly forward and pinching because...",
+    },
+    "stay_awake": {
+        "scenario_id": "stay_awake",
+        "title": "Bro Tried To Stay Awake For 72 Hours Straight… 😵💀 #shorts",
+        "mistake_hook": "Stickman lines up five espressos at 2 AM thinking sleep is optional.",
+        "deadpan_line": "Still totally fine.",
+        "twist_7s": "Brain scan flickers as 2-second micro-sleeps hijack his eyes open while his hands stall mid-blink.",
+        "peak_beat": "Waste proteins pile between neurons until his brain force-reboots right over his keyboard.",
+        "loop_bridge": "...because cheating sleep always triggers involuntary micro-naps when...",
     },
 }
 
@@ -133,27 +174,35 @@ def call_free_llm(role: str, user_msg: str, token: str | None) -> dict[str, Any]
 
 
 def audit_script(script_data: dict[str, Any]) -> dict[str, Any]:
-    """Deterministic retention & Studio rule check matching RetentionAuditorAgent."""
+    """Deterministic retention, Studio, and YPP Inauthentic Content compliance check."""
     issues: list[str] = []
     lines = script_data.get("lines", [])
     visuals = script_data.get("visuals", [])
+    title = script_data.get("title", "").lower()
     if not lines or len(lines) < 4:
         issues.append("Need at least 4 brisk visual beats.")
     if visuals and visuals[0][0] == "diagram_only":
         issues.append("Frame 0 must open on character action, not anatomy diagram.")
+    if any(visuals[i][0] == visuals[i + 1][0] for i in range(len(visuals) - 1)):
+        issues.append("Avoid adjacent repeated visual assets (YPP variety rule).")
+    if title.startswith("why you should never"):
+        issues.append("Vary title hook; avoid repeating 'Why You Should NEVER...' template.")
     last_text = (lines[-1][1] if lines else "").lower()
     if any(b in last_text for b in ("so next time", "before you", "don't forget to")):
         issues.append("Remove trailing generic outro; end mid-clause for loop.")
     jargon = ("macrophage", "cerumen", "nucleation", "cyanoacrylate", "subdermal")
+    boilerplate = ("spikes violently with nowhere to escape",)
     full_txt = " ".join(x[1].lower() for x in lines)
     if any(j in full_txt for j in jargon):
         issues.append("Replace clinical jargon with plain deadpan speech.")
+    if any(b in full_txt for b in boilerplate):
+        issues.append("Remove boilerplate fallback text for YPP originality.")
     score = max(0, 100 - 25 * len(issues))
     return {"approved": len(issues) == 0, "score": score, "issues": issues}
 
 
 def build_offline_script(brief: dict[str, str]) -> dict[str, Any]:
-    """Zero-token deterministic script matching WriterAgent rules."""
+    """Zero-token deterministic script matching WriterAgent rules (no shared boilerplate)."""
     return {
         "title": brief["title"],
         "voice": "en-US-AndrewMultilingualNeural",
@@ -161,14 +210,14 @@ def build_offline_script(brief: dict[str, str]) -> dict[str, Any]:
         "lines": [
             ["NARRATOR", f"{brief['mistake_hook']} \"{brief['deadpan_line']}\"", "1", "alert", 0.10, "&H003838FF&", "BAD IDEA"],
             ["NARRATOR", brief["twist_7s"], "2", "doc", 0.08, "&H0000E6FF&", "0:07 TWIST"],
-            ["NARRATOR", "Seconds later the reaction spikes violently with nowhere to escape.", "3", "panic", 0.08, "&H003838FF&", "PEAK RISK"],
+            ["NARRATOR", brief["peak_beat"], "3", "panic", 0.08, "&H003838FF&", "PEAK RISK"],
             ["NARRATOR", brief["loop_bridge"], "4", "panic", 0.00, "&H003838FF&", "LOOP"],
         ],
         "visuals": [
             ["char_frame0", "1", "hook_punch"],
             ["twist_7s", "2", "punch4"],
             ["peak_reaction", "3", "shake"],
-            ["char_frame0", "4", "push"],
+            ["loop_return", "4", "push"],
         ],
     }
 
@@ -251,17 +300,19 @@ def self_test() -> None:
         raise AssertionError("Expected BillingHaltError for paid OpenAI URL")
     except BillingHaltError:
         pass
-    # 2. Publisher review must flag clinical jargon + generic outro
+    # 2. Publisher review must flag clinical jargon, generic outro, and YPP template patterns
     bad = audit_script({
-        "lines": [["N", "So next time you touch macrophage debris...", "1", "doc", 0.1, None, None]],
-        "visuals": [["diagram_only", "1", "pan"]],
+        "title": "Why You Should NEVER Test This",
+        "lines": [["N", "So next time macrophage spikes violently with nowhere to escape.", "1", "doc", 0.1, None, None]],
+        "visuals": [["diagram_only", "1", "pan"], ["diagram_only", "2", "zoom"]],
     })
-    assert not bad["approved"] and len(bad["issues"]) >= 3
-    # 3. Full offline crew run must pass 100/100 + exact 7 agents registered + security pass
-    ok = run_crew("hotel_kettle", offline=True, notify=False)
-    assert ok["approved"] and ok["publisher_review"]["score"] == 100 and ok["security_audit"]["ok"]
+    assert not bad["approved"] and len(bad["issues"]) >= 5
+    # 3. Full offline crew run must pass 100/100 across all validated briefs + exact 7 agents + security pass
+    for key in STUDIO_VALIDATED_BRIEFS:
+        ok = run_crew(key, offline=True, notify=False)
+        assert ok["approved"] and ok["publisher_review"]["score"] == 100 and ok["security_audit"]["ok"]
     assert set(AGENT_ROLES.keys()) == {"c_assistant", "script_agent", "editor", "publisher", "social_manager", "watchdog", "security_agent"}
-    print("SELF_TEST_PASSED: All 7 Agents (C Assistant, Scriptwriter, Editor, Publisher, Social Manager, Watchdog, Security) verified ($0).")
+    print("SELF_TEST_PASSED: All 7 Agents + YPP Compliance verified ($0).")
 
 
 if __name__ == "__main__":

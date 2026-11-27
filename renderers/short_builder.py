@@ -14,6 +14,21 @@ os.makedirs(VIDEOS_DIR, exist_ok=True)
 
 SR = 44100
 
+DEFAULT_VOICES = (
+    "en-US-AndrewMultilingualNeural",
+    "en-US-ChristopherNeural",
+    "en-US-BrianMultilingualNeural",
+)
+
+# Varied per-short harmonic keys & tempos to avoid mass-produced identical audio tracks (YPP compliance)
+AUDIO_PALETTES = (
+    (118.0, 55.00, 82.41, 110.00, 0.12),   # A minor low pulse
+    (124.0, 61.74, 92.50, 123.47, 0.11),   # B tension groove
+    (130.0, 65.41, 98.00, 130.81, 0.12),   # C kinetic drive
+    (122.0, 49.00, 73.42, 98.00, 0.13),    # G sub suspense
+    (134.0, 73.42, 110.00, 146.83, 0.11),  # D brisk comedy pulse
+)
+
 SHORT_CONFIGS = {
     "fish_bone": {
         "title": "StickNation 3D Fish Bone",
@@ -38,6 +53,7 @@ SHORT_CONFIGS = {
             ("scene_3_perforation.jpg", "6", "push"),
         ],
         "seed": 77,
+        "allow_legacy_repeats": True,
         "hook_sfx": "crunch",
     },
     "qtip_ear": {
@@ -131,14 +147,16 @@ def build_audio_mix(vo, total_dur, scene_starts, cfg):
     t_full = np.linspace(0, total_dur, N, endpoint=False)
     rng = np.random.default_rng(cfg["seed"])
 
-    beat_hz = 126.0 / 60.0
-    pulse = np.exp(-((t_full * beat_hz) % 1.0) * 7.5)
-    dark_bed = (
-        0.48 * np.sin(2 * np.pi * 55.00 * t_full) +
-        0.30 * np.sin(2 * np.pi * 82.41 * t_full) +
-        0.22 * np.sin(2 * np.pi * 110.00 * t_full) * pulse
+    bpm, f1, f2, f3, bed_gain = AUDIO_PALETTES[cfg["seed"] % len(AUDIO_PALETTES)]
+    beat_hz = bpm / 60.0
+    pulse = np.exp(-((t_full * beat_hz) % 1.0) * (6.5 + (cfg["seed"] % 3)))
+    phrase_mod = 0.85 + 0.15 * np.sin(2 * np.pi * (beat_hz / 4.0) * t_full)
+    varied_bed = (
+        0.46 * np.sin(2 * np.pi * f1 * t_full) * phrase_mod +
+        0.30 * np.sin(2 * np.pi * f2 * t_full) +
+        0.24 * np.sin(2 * np.pi * f3 * t_full) * pulse
     )
-    music = dark_bed * 0.13
+    music = varied_bed * bed_gain
 
     sfx = np.zeros(N, dtype=np.float32)
 
@@ -271,6 +289,9 @@ async def render_short(short_key):
         raise ValueError(f"Unknown short key: {short_key}. Available: {list(SHORT_CONFIGS.keys())}")
 
     cfg = SHORT_CONFIGS[short_key]
+    vis_imgs = [v[0] for v in cfg["visuals"]]
+    if not cfg.get("allow_legacy_repeats") and max(vis_imgs.count(x) for x in vis_imgs) > 2:
+        raise ValueError(f"YPP Compliance Block [{short_key}]: static frame reused >2 times.")
     work_dir = os.path.join(OUT_ROOT, f"{short_key}_build")
     assets_dir = os.path.join(BASE_DIR, "assets", cfg["assets_subdir"])
     os.makedirs(work_dir, exist_ok=True)
@@ -287,9 +308,9 @@ async def render_short(short_key):
         mp3_p = os.path.join(work_dir, f"line_{idx:02d}.mp3")
         wav_p = os.path.join(work_dir, f"line_{idx:02d}.wav")
 
-        # Continuous adult clinical narrator voice (calibrated for 25-44 demographic)
-        voice = cfg.get("voice", "en-US-ChristopherNeural")
-        rate = cfg.get("voice_rate", "+10%")
+        # Varied adult narrator voice unless pinned in config
+        voice = cfg.get("voice") or DEFAULT_VOICES[cfg["seed"] % len(DEFAULT_VOICES)]
+        rate = cfg.get("voice_rate", "+8%")
         pitch = "+0Hz"
 
         print(f"  Synthesizing Line {idx}: {text}")
