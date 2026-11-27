@@ -7,6 +7,8 @@ import subprocess
 import wave
 import numpy as np
 
+from stickman_animator import export_hybrid_thumbnail, extract_lipsync_from_wav, render_animated_short
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT_ROOT = os.path.join(BASE_DIR, "out")
 VIDEOS_DIR = os.path.join(BASE_DIR, "videos")
@@ -66,6 +68,9 @@ SHORT_CONFIGS = {
     "splinter_tweezers": {
         "title": "StickNation 3D Splinter Hazard",
         "output_mp4": "stickman_splinter_viral.mp4",
+        "thumbnail_file": "stickman_splinter_thumbnail.jpg",
+        "thumb_text": "DON'T PULL IT!",
+        "renderer": "animated",
         "assets_subdir": "splinter_tweezers",
         "lines": [
             ("NARRATOR", "Pinching a stubborn splinter with metal tweezers crushes the wood tip and drives jagged fragments deeper under your skin.", "1", "alert", 0.08, "&H003838FF&", "TRAUMA: SUBDERMAL SHAFT SHATTER"),
@@ -75,20 +80,16 @@ SHORT_CONFIGS = {
             ("NARRATOR", "Instead, sterilize a fine needle edge and gently flick the entry tunnel open along the exact angle it entered.", "5", "doc", 0.08, "&H0000FFF0&", "SAFE PROTOCOL: STERILE ENTRY LIFT"),
             ("NARRATOR", "So next time a splinter slips beneath your fingertip...", "6", "loop", 0.05, None, None),
         ],
-        "visuals": [
-            ("scene_1_macro.jpg", "1", "hook_punch"),
-            ("scene_2_crush.jpg", "2", "pan"),
-            ("scene_3_infection.jpg", "3", "zoom"),
-            ("scene_3_infection.jpg", "4", "shake"),
-            ("scene_4_safe_lift.jpg", "5", "pan"),
-            ("scene_1_macro.jpg", "6", "push"),
-        ],
+        "visuals": [],
         "seed": 95,
         "hook_sfx": "crunch",
     },
     "superglue_eyes": {
         "title": "StickNation 3D Superglue Eyelids",
         "output_mp4": "stickman_superglue_eyes_viral.mp4",
+        "thumbnail_file": "stickman_superglue_eyes_thumbnail.jpg",
+        "thumb_text": "DON'T PRY IT!",
+        "renderer": "animated",
         "assets_subdir": "superglue_eyes",
         "lines": [
             ("NARRATOR", "A single drop of super glue in your eye reacts instantly with tear moisture, cementing your eyelids shut like concrete.", "1", "alert", 0.08, "&H003838FF&", "EMERGENCY: CYANOACRYLATE POLYMER BOND"),
@@ -98,14 +99,7 @@ SHORT_CONFIGS = {
             ("NARRATOR", "Instead, doctors flush continuously with warm water and coat the bond in thick ointment until the glue releases naturally.", "5", "doc", 0.08, "&H0000FFF0&", "SAFE PROTOCOL: OPHTHALMIC OINTMENT"),
             ("NARRATOR", "So if cyanoacrylate mist ever splashes near your eyes...", "6", "loop", 0.05, None, None),
         ],
-        "visuals": [
-            ("scene_1_macro_eye.jpg", "1", "hook_punch"),
-            ("scene_2_bond.jpg", "2", "pan"),
-            ("scene_3_cornea.jpg", "3", "zoom"),
-            ("scene_3_cornea.jpg", "4", "shake"),
-            ("scene_4_ointment.jpg", "5", "pan"),
-            ("scene_1_macro_eye.jpg", "6", "push"),
-        ],
+        "visuals": [],
         "seed": 103,
         "hook_sfx": "squelch",
     },
@@ -232,6 +226,7 @@ def build_ass_subtitles(timeline_words, ref_intervals, total_dur, cfg):
     if cur:
         chunks.append(cur)
 
+    sub_mv = 640 if cfg.get("renderer") == "animated" else 760
     ass_lines = [
         "[Script Info]",
         f"Title: {cfg['title']}",
@@ -242,7 +237,7 @@ def build_ass_subtitles(timeline_words, ref_intervals, total_dur, cfg):
         "",
         "[V4+ Styles]",
         "Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding",
-        "Style: Default,Impact,92,&H00FFFFFF,&H0000E6FF,&H00000000,&H80000000,-1,0,0,0,100,100,2,0,1,10,5,2,60,110,760,1",
+        f"Style: Default,Impact,92,&H00FFFFFF,&H0000E6FF,&H00000000,&H80000000,-1,0,0,0,100,100,2,0,1,10,5,2,60,110,{sub_mv},1",
         "Style: RefTag,Arial,36,&H00FFFFFF,&H00FFFFFF,&H00000000,&HB0000000,-1,0,0,0,100,100,2,0,3,14,0,8,50,50,140,1",
         "",
         "[Events]",
@@ -375,62 +370,82 @@ async def render_short(short_key):
         f.write(build_ass_subtitles(timeline_words, ref_intervals, total_dur, cfg))
 
     print(f"=== [{short_key}] STEP 4: RENDERING CLIPS & MUXING ===")
-    clip_files = []
-    for idx, (img_name, scene_id, motion) in enumerate(cfg["visuals"]):
-        t_start = scene_starts[idx]
-        t_end = scene_starts[idx + 1] if idx + 1 < len(cfg["visuals"]) else total_dur
-        dur = max(0.5, round(t_end - t_start, 2))
-        img_p = os.path.join(assets_dir, img_name)
-        if not os.path.exists(img_p):
-            raise FileNotFoundError(f"Missing visual asset: {img_p}")
-
-        clip_p = os.path.join(work_dir, f"clip_{idx}.mp4")
-        frames = int(dur * 30) + 2
-        if motion == "hook_punch":
-            # Rapid opening zoom-in within first 1.5s + micro tremble to stop scroll immediately!
-            zoom_expr = "min(1.00+0.18*min(1,on/45)+0.0008*on,1.26)"
-            xy = "x='iw/2-(iw/zoom/2)+3*sin(on*1.8)*exp(-on/30)':y='ih/2-(ih/zoom/2)+3*cos(on*2.1)*exp(-on/30)'"
-        elif motion == "push":
-            zoom_expr = "min(zoom+0.0022,1.22)"
-            xy = "x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)'"
-        elif motion == "shake":
-            zoom_expr = "1.08+0.08*on/" + str(max(1, frames))
-            xy = "x='iw/2-(iw/zoom/2)+6*sin(on*2.0)':y='ih/2-(ih/zoom/2)+4*cos(on*2.3)'"
-        elif motion == "zoom":
-            zoom_expr = "min(1.04+0.0024*on,1.24)"
-            xy = "x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)'"
-        else:
-            zoom_expr = "max(1.16-0.0016*on,1.0)"
-            xy = "x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)'"
-
-        vf = f"scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,zoompan=z='{zoom_expr}':d={frames}:{xy}:s=1080x1920:fps=30,format=yuv420p"
-        subprocess.run(
-            ["ffmpeg", "-y", "-loop", "1", "-i", img_p, "-vf", vf, "-t", f"{dur:.2f}", "-r", "30", "-c:v", "libx264", "-preset", "fast", "-crf", "16", clip_p],
-            check=True,
-            capture_output=True,
-        )
-        clip_files.append(clip_p)
-
-    concat_txt = os.path.join(work_dir, "concat.txt")
-    with open(concat_txt, "w", encoding="utf-8") as f:
-        for cp in clip_files:
-            f.write(f"file '{cp.replace(os.sep, '/')}'\n")
-
     raw_video = os.path.join(work_dir, "video_raw.mp4")
-    subprocess.run(["ffmpeg", "-y", "-f", "concat", "-safe", "0", "-i", concat_txt, "-c", "copy", raw_video], check=True, capture_output=True)
+
+    if cfg.get("renderer") == "animated":
+        lip_track = extract_lipsync_from_wav(norm_master, timeline_words, fps=30)
+        render_animated_short(short_key, total_dur, lip_track, scene_starts, raw_video, use_nvenc=True, fps=30)
+        if cfg.get("thumbnail_file"):
+            thumb_dest = os.path.join(VIDEOS_DIR, cfg["thumbnail_file"])
+            export_hybrid_thumbnail(short_key, cfg.get("thumb_text", "DON'T DO THIS!"), thumb_dest)
+            print(f"  Exported animated hybrid thumbnail: {thumb_dest}")
+    else:
+        clip_files = []
+        for idx, (img_name, scene_id, motion) in enumerate(cfg["visuals"]):
+            t_start = scene_starts[idx]
+            t_end = scene_starts[idx + 1] if idx + 1 < len(cfg["visuals"]) else total_dur
+            dur = max(0.5, round(t_end - t_start, 2))
+            img_p = os.path.join(assets_dir, img_name)
+            if not os.path.exists(img_p):
+                raise FileNotFoundError(f"Missing visual asset: {img_p}")
+
+            clip_p = os.path.join(work_dir, f"clip_{idx}.mp4")
+            frames = int(dur * 30) + 2
+            if motion == "hook_punch":
+                zoom_expr = "min(1.00+0.18*min(1,on/45)+0.0008*on,1.26)"
+                xy = "x='iw/2-(iw/zoom/2)+3*sin(on*1.8)*exp(-on/30)':y='ih/2-(ih/zoom/2)+3*cos(on*2.1)*exp(-on/30)'"
+            elif motion == "push":
+                zoom_expr = "min(zoom+0.0022,1.22)"
+                xy = "x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)'"
+            elif motion == "shake":
+                zoom_expr = "1.08+0.08*on/" + str(max(1, frames))
+                xy = "x='iw/2-(iw/zoom/2)+6*sin(on*2.0)':y='ih/2-(ih/zoom/2)+4*cos(on*2.3)'"
+            elif motion == "zoom":
+                zoom_expr = "min(1.04+0.0024*on,1.24)"
+                xy = "x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)'"
+            else:
+                zoom_expr = "max(1.16-0.0016*on,1.0)"
+                xy = "x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)'"
+
+            vf = f"scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,zoompan=z='{zoom_expr}':d={frames}:{xy}:s=1080x1920:fps=30,format=yuv420p"
+            subprocess.run(
+                ["ffmpeg", "-y", "-loop", "1", "-i", img_p, "-vf", vf, "-t", f"{dur:.2f}", "-r", "30", "-c:v", "libx264", "-preset", "fast", "-crf", "16", clip_p],
+                check=True,
+                capture_output=True,
+            )
+            clip_files.append(clip_p)
+
+        concat_txt = os.path.join(work_dir, "concat.txt")
+        with open(concat_txt, "w", encoding="utf-8") as f:
+            for cp in clip_files:
+                f.write(f"file '{cp.replace(os.sep, '/')}'\n")
+
+        subprocess.run(["ffmpeg", "-y", "-f", "concat", "-safe", "0", "-i", concat_txt, "-c", "copy", raw_video], check=True, capture_output=True)
 
     ass_esc = ass_path.replace("\\", "/").replace(":", "\\:")
     final_mp4 = os.path.join(VIDEOS_DIR, cfg["output_mp4"])
-    subprocess.run(
-        [
-            "ffmpeg", "-y", "-i", raw_video, "-i", norm_master,
-            "-vf", f"vignette=PI/10,ass='{ass_esc}'",
-            "-c:v", "libx264", "-preset", "fast", "-crf", "18",
-            "-c:a", "aac", "-b:a", "192k", "-shortest", final_mp4,
-        ],
-        check=True,
-        capture_output=True,
-    )
+    cmd_final = [
+        "ffmpeg", "-y", "-i", raw_video, "-i", norm_master,
+        "-vf", f"vignette=PI/10,ass='{ass_esc}'",
+        "-c:v", "h264_nvenc" if cfg.get("renderer") == "animated" else "libx264",
+    ]
+    if cfg.get("renderer") == "animated":
+        cmd_final += ["-preset", "p4", "-cq", "20"]
+    else:
+        cmd_final += ["-preset", "fast", "-crf", "18"]
+    cmd_final += ["-c:a", "aac", "-b:a", "192k", "-shortest", final_mp4]
+    res_fin = subprocess.run(cmd_final, capture_output=True)
+    if res_fin.returncode != 0 and cfg.get("renderer") == "animated":
+        subprocess.run(
+            [
+                "ffmpeg", "-y", "-i", raw_video, "-i", norm_master,
+                "-vf", f"vignette=PI/10,ass='{ass_esc}'",
+                "-c:v", "libx264", "-preset", "fast", "-crf", "18",
+                "-c:a", "aac", "-b:a", "192k", "-shortest", final_mp4,
+            ],
+            check=True,
+            capture_output=True,
+        )
 
     dur_out = subprocess.check_output(
         ["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "default=noprint_wrappers=1:nokey=1", final_mp4]
