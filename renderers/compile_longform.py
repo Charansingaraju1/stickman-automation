@@ -68,7 +68,7 @@ def _select_theme(theme_key: str | None = None) -> dict:
     return next((t for t in THEMES if t["key"] not in done), THEMES[0])
 
 
-def build_compilation(theme_key: str | None = None, publish: bool = False) -> tuple[pathlib.Path, pathlib.Path]:
+def build_compilation(theme_key: str | None = None, publish: bool = False, dry_run: bool = False) -> tuple[pathlib.Path, pathlib.Path]:
     theme = _select_theme(theme_key)
     by_id = {q["id"]: q for q in load_viral_queue()}
     ordered_ids = theme["order"] + [qid for qid in by_id if qid not in theme["order"]]
@@ -86,6 +86,10 @@ def build_compilation(theme_key: str | None = None, publish: bool = False) -> tu
             break
     if len(clips) < 2:
         raise RuntimeError(f"Need at least 2 MP4s in videos/; found {len(clips)}")
+    if dry_run:
+        est = round(sum(c[2] for c in clips), 1)
+        print(f"[DRY RUN] Compilation {theme['key']} ready ({len(clips)} clips, ~{est}s): {theme['title']}")
+        return OUT_MP4, OUT_THUMB
 
     OUT_MP4.parent.mkdir(parents=True, exist_ok=True)
     inputs: list[str] = []
@@ -172,5 +176,6 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--theme", choices=[t["key"] for t in THEMES], default=None)
     ap.add_argument("--publish", action="store_true")
+    ap.add_argument("--dry-run", action="store_true")
     args = ap.parse_args()
-    build_compilation(theme_key=args.theme, publish=args.publish)
+    build_compilation(theme_key=args.theme, publish=(args.publish and not args.dry_run), dry_run=args.dry_run)

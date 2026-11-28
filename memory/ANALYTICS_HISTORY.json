@@ -1,0 +1,10 @@
+{
+  "channel": "@StickNationDaily",
+  "analytics_status": "awaiting_oauth_scope_reauth",
+  "required_scopes": [
+    "https://www.googleapis.com/auth/youtube.readonly",
+    "https://www.googleapis.com/auth/yt-analytics.readonly"
+  ],
+  "api_caveat": "YouTube Analytics API v2 supports views, engagedViews, averageViewDuration, averageViewPercentage, audienceRetention, subscribersGained, likes, comments, shares, country, and insightTrafficSourceType. Studio UI 'Viewed vs. Swiped Away' is not directly exposed in Analytics API v2 and must never be fabricated.",
+  "snapshots": []
+}

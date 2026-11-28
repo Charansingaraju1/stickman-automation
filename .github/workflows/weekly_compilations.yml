@@ -43,7 +43,15 @@ jobs:
           echo '${{ secrets.YOUTUBE_CLIENT_SECRET_JSON }}' > client_secret.json
 
       - name: Build & Publish Weekly 16:9 Compilation + Thumbnail
-        run: python renderers/compile_longform.py --publish
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] || [ "${{ vars.AUTO_PUBLISH_ENABLED }}" = "true" ]; then
+            python renderers/compile_longform.py --publish
+          else
+            python renderers/compile_longform.py --dry-run
+          fi
 
       - name: Commit Compilation History
         run: |

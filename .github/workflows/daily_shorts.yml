@@ -33,13 +33,28 @@ jobs:
           echo '${{ secrets.YOUTUBE_CLIENT_SECRET_JSON }}' > client_secret.json
 
       - name: Publish Next Short on YouTube
-        run: python upload_to_youtube.py
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] || [ "${{ vars.AUTO_PUBLISH_ENABLED }}" = "true" ]; then
+            python upload_to_youtube.py
+          else
+            python upload_to_youtube.py --dry-run
+          fi
 
       - name: Cross-Post Next Reel on Instagram (@stick_man_nation)
         env:
           IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
           IG_ACCOUNT_ID: ${{ secrets.IG_ACCOUNT_ID || '17841451949000745' }}
-        run: python upload_to_instagram.py
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] || [ "${{ vars.AUTO_PUBLISH_ENABLED }}" = "true" ]; then
+            python upload_to_instagram.py
+          else
+            python upload_to_instagram.py --dry-run
+          fi
 
       - name: Commit Updated Upload History
         run: |

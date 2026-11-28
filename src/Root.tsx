@@ -6,6 +6,7 @@ import { ZackBatteryShort } from "./ZackBatteryShort";
 import { GravityShortTest } from "./GravityShortTest";
 import { CloudShort, CloudShortProps } from "./CloudShort";
 import { CloudLongThumbnail, CloudThumbnail, CloudThumbnailProps } from "./CloudThumbnail";
+import { ZackStickmanShort, ZackStickmanShortProps } from "./ZackStickmanShort";
 
 const DEFAULT_CLOUD_SHORT: CloudShortProps = {
   title: "StickNation Cloud Short",
@@ -32,7 +33,7 @@ export const Root: React.FC = () => {
         id="CloudShort"
         component={CloudShort}
         durationInFrames={600}
-        calculateMetadata={({ props }) => ({
+        calculateMetadata={({ props }: { props: CloudShortProps }) => ({
           durationInFrames: Math.max(90, Math.round((props.durationSec || 20) * 30)),
         })}
         fps={30}
@@ -91,6 +92,35 @@ export const Root: React.FC = () => {
         fps={30}
         width={1080}
         height={1920}
+      />
+      <Composition
+        id="ZackStickmanShort"
+        component={ZackStickmanShort}
+        durationInFrames={600}
+        calculateMetadata={({ props }: { props: ZackStickmanShortProps }) => ({
+          durationInFrames: Math.max(90, Math.round((props.durationSec || 20) * 30)),
+        })}
+        fps={30}
+        width={1080}
+        height={1920}
+        defaultProps={{
+          title: "B&W Vector Stickman Pilot",
+          durationSec: 18,
+          scenes: [
+            {
+              startSec: 0,
+              endSec: 4,
+              label: "400F GREASE TRAP",
+              pose: "point",
+              expression: "shock",
+              module: "explosion_safe",
+              callout: "1700x STEAM",
+              accentHex: "#FF3B30",
+              cameraZoom: 1.08,
+            },
+          ],
+          words: [],
+        }}
       />
     </>
   );

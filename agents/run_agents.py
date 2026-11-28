@@ -125,13 +125,28 @@ def assert_zero_cost(endpoint: str, model: str, notify: bool = True) -> None:
 
 
 def audit_security(root_dir: pathlib.Path = ROOT) -> dict[str, Any]:
-    """Security Agent: checks .gitignore secret rules and scans code for exposed tokens."""
+    """Security Agent: checks .gitignore secret rules and scans tracked source files for exposed tokens."""
     gi = (root_dir / ".gitignore").read_text(encoding="utf-8", errors="ignore") if (root_dir / ".gitignore").exists() else ""
     missing_ignores = [p for p in (".env", "token.json", "client_secret.json") if p not in gi]
     leaks: list[str] = []
-    token_re = re.compile(r"(?:EAAQ[A-Za-z0-9]{16,}|github_pat_[A-Za-z0-9_]{16,}|cfut_[A-Za-z0-9_]{16,})")
-    for p in list((root_dir / "agents").glob("*.py")) + list((root_dir / "renderers").glob("*.py")) + [root_dir / "upload_to_youtube.py", root_dir / "upload_to_instagram.py"]:
-        if p.exists():
+    token_re = re.compile(
+        r"(?:EAAQ[A-Za-z0-9]{16,}|github_pat_[A-Za-z0-9_]{16,}|gh[oprsu]_[A-Za-z0-9_]{20,}|cfut_[A-Za-z0-9_]{16,}"
+        r"|AIza[0-9A-Za-z_-]{30,}|GOCSPX-[0-9A-Za-z_-]{20,}|[0-9]{8,12}:AA[0-9A-Za-z_-]{30,})"
+    )
+    scan_files = (
+        list((root_dir / "agents").glob("*.py"))
+        + list((root_dir / "renderers").glob("*.py"))
+        + list((root_dir / "src").rglob("*.ts"))
+        + list((root_dir / "src").rglob("*.tsx"))
+        + list((root_dir / ".github" / "workflows").glob("*.yml"))
+        + list((root_dir / "cloudflare_worker").glob("*"))
+        + list((root_dir / "memory").glob("*"))
+        + list((root_dir / ".agents").rglob("*.md"))
+        + list((root_dir / ".agents").rglob("*.mjs"))
+        + [root_dir / "upload_to_youtube.py", root_dir / "upload_to_instagram.py", root_dir / "README.md", root_dir / "AGENTS.md"]
+    )
+    for p in scan_files:
+        if p.exists() and p.is_file():
             txt = p.read_text(encoding="utf-8", errors="ignore")
             if token_re.search(txt):
                 leaks.append(str(p.relative_to(root_dir)))

@@ -40,4 +40,6 @@ jobs:
       - name: Run 5-Agent Crew + Assistant Brief ($0 Cloud)
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: python agents/run_agents.py --scenario "${{ github.event.inputs.scenario || 'hotel_kettle' }}" --daily-brief

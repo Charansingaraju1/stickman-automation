@@ -38,7 +38,7 @@ export interface WordTiming {
   scene_id: string;
 }
 
-export interface CloudShortProps {
+export type CloudShortProps = {
   title: string;
   bgHex: string;
   accentHex: string;
@@ -47,7 +47,7 @@ export interface CloudShortProps {
   scenes: SceneBeat[];
   words: WordTiming[];
   loopBackStartSec?: number;
-}
+};
 
 const MODE_COLOR: Record<string, string> = {
   alert: "#FF3B30",

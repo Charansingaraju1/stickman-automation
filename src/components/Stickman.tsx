@@ -1,20 +1,30 @@
 import React from "react";
 
+export type StickmanPose =
+  | "walk"
+  | "run"
+  | "push"
+  | "charge"
+  | "ram_hold"
+  | "kneel"
+  | "look_up"
+  | "fall"
+  | "jump"
+  | "point"
+  | "think"
+  | "casual_walk"
+  | "casual_stand"
+  | "pull_door";
+
+export type StickmanExpression = "neutral" | "shock" | "curious" | "panic" | "pain";
+
 export interface StickmanProps {
   x: number;
   y?: number; // Ground y coordinate (default 1450)
-  pose:
-    | "walk"
-    | "push"
-    | "charge"
-    | "ram_hold"
-    | "kneel"
-    | "look_up"
-    | "casual_walk"
-    | "casual_stand"
-    | "pull_door";
+  pose: StickmanPose;
   walkCycle?: number;
   facing?: "left" | "right";
+  expression?: StickmanExpression;
   sweat?: boolean;
   dizzy?: boolean;
   scale?: number;
@@ -26,6 +36,7 @@ export const Stickman: React.FC<StickmanProps> = ({
   pose,
   walkCycle = 0,
   facing = "right",
+  expression = "neutral",
   sweat = false,
   dizzy = false,
   scale = 1,
@@ -271,6 +282,59 @@ export const Stickman: React.FC<StickmanProps> = ({
       };
       break;
     }
+
+    case "run": {
+      const a = Math.sin(walkCycle * 1.6);
+      headX = 28 * dir;
+      headY = -325 + Math.abs(a) * 12;
+      neckX = 18 * dir;
+      neckY = -260 + Math.abs(a) * 10;
+      hipX = -15 * dir;
+      hipY = -175 + Math.abs(a) * 8;
+      leftLeg = { kneeX: (a * 65) * dir, kneeY: -90, footX: (a * 95 - 20) * dir, footY: Math.min(0, -a * 28) };
+      rightLeg = { kneeX: (-a * 65) * dir, kneeY: -90, footX: (-a * 95 - 20) * dir, footY: Math.min(0, a * 28) };
+      leftArm = { elbowX: (-a * 50) * dir, elbowY: neckY + 40, handX: (-a * 80 + 25) * dir, handY: neckY + 15 };
+      rightArm = { elbowX: (a * 50) * dir, elbowY: neckY + 40, handX: (a * 80 + 25) * dir, handY: neckY + 15 };
+      break;
+    }
+
+    case "jump": {
+      headY = -395;
+      neckY = -325;
+      hipY = -235;
+      leftLeg = { kneeX: -35 * dir, kneeY: -135, footX: -20 * dir, footY: -65 };
+      rightLeg = { kneeX: 35 * dir, kneeY: -145, footX: 45 * dir, footY: -75 };
+      leftArm = { elbowX: -55 * dir, elbowY: -355, handX: -75 * dir, handY: -415 };
+      rightArm = { elbowX: 55 * dir, elbowY: -355, handX: 75 * dir, handY: -415 };
+      break;
+    }
+
+    case "fall": {
+      headX = -65 * dir;
+      headY = -260;
+      neckX = -35 * dir;
+      neckY = -215;
+      hipX = 25 * dir;
+      hipY = -145;
+      leftLeg = { kneeX: 75 * dir, kneeY: -125, footX: 115 * dir, footY: -80 };
+      rightLeg = { kneeX: 60 * dir, kneeY: -85, footX: 105 * dir, footY: -20 };
+      leftArm = { elbowX: -75 * dir, elbowY: -275, handX: -115 * dir, handY: -315 };
+      rightArm = { elbowX: -15 * dir, elbowY: -290, handX: 20 * dir, handY: -345 };
+      break;
+    }
+
+    case "point": {
+      leftArm = { elbowX: -30 * dir, elbowY: -210, handX: -25 * dir, handY: -150 };
+      rightArm = { elbowX: 65 * dir, elbowY: -265, handX: 135 * dir, handY: -275 };
+      break;
+    }
+
+    case "think": {
+      headX = 8 * dir;
+      leftArm = { elbowX: -28 * dir, elbowY: -205, handX: -12 * dir, handY: -155 };
+      rightArm = { elbowX: 48 * dir, elbowY: -225, handX: 18 * dir, handY: -305 };
+      break;
+    }
   }
 
   return (
@@ -333,6 +397,35 @@ export const Stickman: React.FC<StickmanProps> = ({
         r={headRadius}
         fill="#000000"
       />
+
+      {/* Minimal expressive eyes/mouth strictly when expression != neutral */}
+      {expression !== "neutral" && (
+        <g transform={`translate(${headX + 8 * dir}, ${headY - 4})`}>
+          <ellipse
+            cx={-10}
+            cy={-2}
+            rx={7}
+            ry={expression === "shock" || expression === "panic" ? 10 : 7}
+            fill="#FFFFFF"
+          />
+          <ellipse
+            cx={10}
+            cy={-2}
+            rx={7}
+            ry={expression === "shock" || expression === "panic" ? 10 : 7}
+            fill="#FFFFFF"
+          />
+          <circle cx={-9} cy={-2} r={3} fill="#000000" />
+          <circle cx={11} cy={-2} r={3} fill="#000000" />
+          {expression === "shock" || expression === "panic" ? (
+            <ellipse cx={0} cy={17} rx={8} ry={6} fill="#FFFFFF" />
+          ) : expression === "pain" ? (
+            <path d="M-9 18 Q0 12 9 18" fill="none" stroke="#FFFFFF" strokeWidth={3} strokeLinecap="round" />
+          ) : (
+            <line x1={-6} y1={16} x2={8} y2={15} stroke="#FFFFFF" strokeWidth={3} strokeLinecap="round" />
+          )}
+        </g>
+      )}
 
       {/* Dizzy stars / wobble lines if dizzy */}
       {dizzy && (

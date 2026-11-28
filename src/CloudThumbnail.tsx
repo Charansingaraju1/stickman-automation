@@ -1,13 +1,13 @@
 import React from "react";
 import { AbsoluteFill, Img, staticFile } from "remotion";
 
-export interface CloudThumbnailProps {
+export type CloudThumbnailProps = {
   topBadge: string;
   headline: string;
   accentHex: string;
   primaryImgPath?: string;
   secondaryImgPath?: string;
-}
+};
 
 // Unified full-bleed StickNation signature thumbnail (matches Mentos "DO NOT MIX!" bold yellow/white house style)
 export const CloudThumbnail: React.FC<CloudThumbnailProps> = ({

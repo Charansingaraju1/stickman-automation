@@ -1,0 +1,24 @@
+{
+  "channel": "@StickNationDaily",
+  "channel_id": "UCEg6_uGfdPwTKVCsmWF23Sw",
+  "note": "Seeded from uploaded_history.json and cloud_queue.json; YouTube video IDs left null until youtube.readonly sync populates actual live IDs.",
+  "published": [
+    {"id": "hangnail", "video_id": null, "title": "Why You Should NEVER Pull a Hangnail", "source": "uploaded_history.json"},
+    {"id": "holding_pee", "video_id": null, "title": "What Happens If You Hold Your Pee?!", "source": "uploaded_history.json"},
+    {"id": "swallowing_gum", "video_id": null, "title": "Does Swallowed Gum REALLY Stay For 7 Years?!", "source": "uploaded_history.json"},
+    {"id": "holding_sneeze", "video_id": null, "title": "What Actually Happens If You Hold in a Sneeze?!", "source": "uploaded_history.json"},
+    {"id": "pimple_danger_triangle", "video_id": null, "title": "Why You Should NEVER Pop It", "source": "uploaded_history.json"},
+    {"id": "ear_bug_tweezer_danger", "video_id": null, "title": "Why You Should NEVER Dig Out an Ear Bug", "source": "uploaded_history.json"},
+    {"id": "qtip_eardrum_danger", "video_id": null, "title": "Why You Should NEVER Clean Ears With Q-Tips", "source": "uploaded_history.json"},
+    {"id": "fish_bone_bread_danger", "video_id": null, "title": "Why You Should NEVER Eat Bread for a Fish Bone", "source": "uploaded_history.json"},
+    {"id": "mentos_cola_danger", "video_id": null, "title": "Bro Thought It Was Just A Harmless Soda Trick...", "source": "uploaded_history.json"}
+  ],
+  "queued": [
+    {"id": "knuckle_cracking", "file": "videos/stickman_knuckle_cracking_viral.mp4", "title": "Why Knuckles Fail For 15 Mins?", "contains_synthetic_media": true},
+    {"id": "hotel_kettle_danger", "file": "videos/stickman_hotel_kettle_viral.mp4", "title": "Never Drink 1st Hotel Kettle Boil?", "contains_synthetic_media": true},
+    {"id": "watermelon_seed_myth", "file": "videos/stickman_watermelon_seed_viral.mp4", "title": "What 1 Seed Does Inside In 24h?", "contains_synthetic_media": true},
+    {"id": "bleach_vinegar_gas", "file": "videos/stickman_bleach_vinegar_viral.mp4", "title": "Bleach + Vinegar: 10s Lung Risk?", "contains_synthetic_media": false},
+    {"id": "nosebleed_tilt_mistake", "file": "videos/stickman_nosebleed_tilt_viral.mp4", "title": "Nosebleed? Never Tilt Back 10m!", "contains_synthetic_media": false},
+    {"id": "stay_awake_72h", "file": "videos/stickman_stay_awake_viral.mp4", "title": "72 Hours Awake? 2s Blackout!", "contains_synthetic_media": false}
+  ]
+}

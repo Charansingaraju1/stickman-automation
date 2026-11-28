@@ -1,23 +1,47 @@
 import os, json, sys
 import urllib.request, urllib.parse
 
-SCOPES = ["https://www.googleapis.com/auth/youtube.upload"]
+SCOPES = [
+    "https://www.googleapis.com/auth/youtube.upload",
+    "https://www.googleapis.com/auth/youtube.force-ssl",
+    "https://www.googleapis.com/auth/youtube.readonly",
+    "https://www.googleapis.com/auth/yt-analytics.readonly",
+]
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 TOKEN_FILE = os.path.join(BASE_DIR, "token.json")
 CLIENT_SECRETS_FILE = os.path.join(BASE_DIR, "client_secret.json")
 
-BOT_TOKEN = "9209650931:AAHnXeSzG4JURWeZCryqRMLSdpV6Mp-Z3lU"
-CHAT_ID = "6236827164"
+
+def _read_env_var(name: str, default: str = "") -> str:
+    val = os.environ.get(name, "").strip()
+    if val:
+        return val
+    env_p = os.path.join(BASE_DIR, ".env")
+    if os.path.exists(env_p):
+        with open(env_p, "r", encoding="utf-8") as fh:
+            for line in fh:
+                s = line.strip()
+                if s and not s.startswith("#") and s.startswith(f"{name}="):
+                    return s.split("=", 1)[1].strip()
+    return default
+
 
 def send_telegram_alert(text):
-    url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
-    data = urllib.parse.urlencode({"chat_id": CHAT_ID, "text": text}).encode("utf-8")
+    bot_token = _read_env_var("TELEGRAM_BOT_TOKEN")
+    chat_id = _read_env_var("TELEGRAM_CHAT_ID")
+    if not bot_token or not chat_id:
+        print("Telegram alert skipped: TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID not configured.")
+        return False
+    url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
+    data = urllib.parse.urlencode({"chat_id": chat_id, "text": text}).encode("utf-8")
     req = urllib.request.Request(url, data=data)
     try:
-        with urllib.request.urlopen(req, timeout=10) as resp:
+        with urllib.request.urlopen(req, timeout=10):
             print("Telegram alert sent successfully.")
+            return True
     except Exception as e:
         print(f"Telegram alert error: {e}")
+        return False
 
 def get_authenticated_service():
     from google.oauth2.credentials import Credentials
@@ -378,27 +402,20 @@ def upload_next_in_queue(dry_run=False):
     return None
 
 def refresh_auth_token():
-    """Run local browser OAuth flow with youtube.upload + youtube.force-ssl scopes for GitHub secret update."""
+    """Run local browser OAuth flow with upload, comment, read, and analytics scopes."""
     from google_auth_oauthlib.flow import InstalledAppFlow
 
     if not os.path.exists(CLIENT_SECRETS_FILE):
         raise FileNotFoundError(
             f"Missing {CLIENT_SECRETS_FILE}. Download OAuth Desktop JSON from Google Cloud Console first."
         )
-    flow = InstalledAppFlow.from_client_secrets_file(
-        CLIENT_SECRETS_FILE,
-        [
-            "https://www.googleapis.com/auth/youtube.upload",
-            "https://www.googleapis.com/auth/youtube.force-ssl",
-        ],
-    )
+    flow = InstalledAppFlow.from_client_secrets_file(CLIENT_SECRETS_FILE, SCOPES)
     creds = flow.run_local_server(port=0)
     token_json = creds.to_json()
     with open(TOKEN_FILE, "w", encoding="utf-8") as f:
         f.write(token_json)
-    print("\nSUCCESS: Saved token.json locally with full upload + comment scopes.")
-    print("Copy the JSON printed below into GitHub Repo Secret -> YOUTUBE_TOKEN_JSON:\n")
-    print(token_json)
+    print("\nSUCCESS: Saved token.json locally with upload, force-ssl, readonly, and yt-analytics.readonly scopes.")
+    print("Copy token.json contents manually into GitHub Repo Secret -> YOUTUBE_TOKEN_JSON (never print tokens to logs).")
 
 
 if __name__ == "__main__":
