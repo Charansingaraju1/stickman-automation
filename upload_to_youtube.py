@@ -1,9 +1,5 @@
 import os, json, sys
 import urllib.request, urllib.parse
-from google_auth_oauthlib.flow import InstalledAppFlow
-from googleapiclient.discovery import build
-from googleapiclient.http import MediaFileUpload
-from google.oauth2.credentials import Credentials
 
 SCOPES = ["https://www.googleapis.com/auth/youtube.upload"]
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -24,6 +20,10 @@ def send_telegram_alert(text):
         print(f"Telegram alert error: {e}")
 
 def get_authenticated_service():
+    from google.oauth2.credentials import Credentials
+    from google_auth_oauthlib.flow import InstalledAppFlow
+    from googleapiclient.discovery import build
+
     creds = None
     if os.path.exists(TOKEN_FILE):
         # Load scopes embedded in token.json so adding broader scopes doesn't break existing refresh tokens
@@ -47,6 +47,8 @@ def get_authenticated_service():
     return build("youtube", "v3", credentials=creds)
 
 def upload_video(file_path, title, description, tags=None, privacy="public", thumbnail_path=None, comment_text=None, contains_synthetic_media=False):
+    from googleapiclient.http import MediaFileUpload
+
     youtube = get_authenticated_service()
     body = {
         "snippet": {
@@ -377,6 +379,8 @@ def upload_next_in_queue(dry_run=False):
 
 def refresh_auth_token():
     """Run local browser OAuth flow with youtube.upload + youtube.force-ssl scopes for GitHub secret update."""
+    from google_auth_oauthlib.flow import InstalledAppFlow
+
     if not os.path.exists(CLIENT_SECRETS_FILE):
         raise FileNotFoundError(
             f"Missing {CLIENT_SECRETS_FILE}. Download OAuth Desktop JSON from Google Cloud Console first."
