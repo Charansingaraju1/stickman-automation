@@ -130,7 +130,7 @@ def audit_security(root_dir: pathlib.Path = ROOT) -> dict[str, Any]:
     missing_ignores = [p for p in (".env", "token.json", "client_secret.json") if p not in gi]
     leaks: list[str] = []
     token_re = re.compile(r"(?:EAAQ[A-Za-z0-9]{16,}|github_pat_[A-Za-z0-9_]{16,}|cfut_[A-Za-z0-9_]{16,})")
-    for p in list((root_dir / "agents").glob("*.py")) + list((root_dir / "renderers").glob("*.py")) + [root_dir / "upload_to_youtube.py"]:
+    for p in list((root_dir / "agents").glob("*.py")) + list((root_dir / "renderers").glob("*.py")) + [root_dir / "upload_to_youtube.py", root_dir / "upload_to_instagram.py"]:
         if p.exists():
             txt = p.read_text(encoding="utf-8", errors="ignore")
             if token_re.search(txt):
@@ -283,7 +283,7 @@ def send_c_assistant_daily_brief(scenario: str = "hotel_kettle", offline: bool =
         f"📋 Daily Update — C Assistant\n\n"
         f"📱 Social Manager (@StickNationDaily): {subs} | {views}\n"
         f"🏆 Top Short: {top_title}\n"
-        f"⏰ Publisher Slot: 2:30 PM EST daily (1/day) | {ready_cnt} queued\n"
+        f"⏰ Publisher Slot: 10 AM & 5 PM EST daily (2/day + IG) | {ready_cnt} queued\n"
         f"✍️ Script + Review ({crew['publisher_review']['score']}/100 APV-ready): {crew['scout']['title']}\n"
         f"💬 Deadpan Hook: \"{crew['scout']['deadpan_line']}\"\n"
         f"💸 Billing Guard: $0.00 (Free Cloud Only)\n\n"

@@ -272,16 +272,22 @@ export const CloudShort: React.FC<CloudShortProps> = ({
   let scale = 1.0;
   let tx = 0;
   let ty = 0;
+  // Immediate Frame-0 snap impact on every beat so feed viewers never see a static still
+  const snapPop = spring({ frame: localFrame, fps, config: { damping: 12, stiffness: 260 } });
+  const liveDrift = Math.sin(localFrame * 0.08) * 6;
   if (scene.motion === "hook_punch" || scene.motion === "punch4") {
-    scale = Math.min(1.22, 1.0 + 0.16 * Math.min(1, localFrame / 4) + localFrame * 0.0012);
+    scale = 1.04 + 0.14 * snapPop + Math.min(0.08, localFrame * 0.0014);
+    ty = liveDrift * 0.6;
   } else if (scene.motion === "shake") {
-    scale = 1.12;
+    scale = 1.12 + 0.03 * snapPop;
     tx = Math.sin(localFrame * 2.1) * 14;
     ty = Math.cos(localFrame * 2.4) * 10;
   } else if (scene.motion === "zoom") {
-    scale = Math.min(1.24, 1.02 + localFrame * 0.003);
+    scale = Math.min(1.24, 1.04 + localFrame * 0.0032);
+    tx = liveDrift;
   } else {
-    scale = interpolate(localFrame, [0, 90], [1.14, 1.0], { extrapolateRight: "clamp" });
+    scale = interpolate(localFrame, [0, 90], [1.16, 1.02], { extrapolateRight: "clamp" });
+    tx = -liveDrift;
   }
 
   const activeChunk = React.useMemo(() => {

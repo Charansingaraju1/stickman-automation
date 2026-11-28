@@ -15,9 +15,9 @@ os.makedirs(VIDEOS_DIR, exist_ok=True)
 SR = 44100
 
 DEFAULT_VOICES = (
-    "en-US-AndrewMultilingualNeural",
     "en-US-ChristopherNeural",
-    "en-US-BrianMultilingualNeural",
+    "en-US-GuyNeural",
+    "en-US-BrianNeural",
 )
 
 # Varied per-short harmonic keys & tempos to avoid mass-produced identical audio tracks (YPP compliance)
@@ -109,28 +109,30 @@ SHORT_CONFIGS = {
 }
 
 
-async def synth_line(text, voice, rate, pitch, mp3_p, max_retries=4):
+async def synth_line(text, voice, rate, pitch, mp3_p, max_retries=2):
     clean = text.replace("?!", "!").replace("...", ",").replace("—", ", ")
-    for attempt in range(max_retries):
-        try:
-            comm = edge_tts.Communicate(clean, voice=voice, rate=rate, pitch=pitch, boundary="WordBoundary")
-            raw_words = []
-            audio_bytes = bytearray()
-            async for chunk in comm.stream():
-                if chunk["type"] == "audio":
-                    audio_bytes.extend(chunk["data"])
-                elif chunk["type"] == "WordBoundary":
-                    s = chunk["offset"] / 10_000_000.0
-                    d = chunk["duration"] / 10_000_000.0
-                    raw_words.append({"word": chunk["text"], "start": s, "end": s + d})
-            if len(audio_bytes) > 0 and len(raw_words) > 0:
-                with open(mp3_p, "wb") as f:
-                    f.write(audio_bytes)
-                return raw_words
-        except Exception as e:
-            print(f"  Attempt {attempt+1} failed: {e}. Retrying...")
-            await asyncio.sleep(1.0)
-    raise RuntimeError(f"Failed to synth: {text}")
+    candidates = list(dict.fromkeys([voice, *DEFAULT_VOICES]))
+    for cand_voice in candidates:
+        for attempt in range(max_retries):
+            try:
+                comm = edge_tts.Communicate(clean, voice=cand_voice, rate=rate, pitch=pitch, boundary="WordBoundary")
+                raw_words = []
+                audio_bytes = bytearray()
+                async for chunk in comm.stream():
+                    if chunk["type"] == "audio":
+                        audio_bytes.extend(chunk["data"])
+                    elif chunk["type"] == "WordBoundary":
+                        s = chunk["offset"] / 10_000_000.0
+                        d = chunk["duration"] / 10_000_000.0
+                        raw_words.append({"word": chunk["text"], "start": s, "end": s + d})
+                if len(audio_bytes) > 0 and len(raw_words) > 0:
+                    with open(mp3_p, "wb") as f:
+                        f.write(audio_bytes)
+                    return raw_words
+            except Exception as e:
+                print(f"  Attempt {attempt+1} ({cand_voice}) failed: {e}. Retrying...")
+                await asyncio.sleep(0.8)
+    raise RuntimeError(f"Failed to synth across all voices: {text}")
 
 
 def fmt_t(sec):

@@ -5,7 +5,7 @@ import { PhonePanicShort } from "./PhonePanicShort";
 import { ZackBatteryShort } from "./ZackBatteryShort";
 import { GravityShortTest } from "./GravityShortTest";
 import { CloudShort, CloudShortProps } from "./CloudShort";
-import { CloudThumbnail, CloudThumbnailProps } from "./CloudThumbnail";
+import { CloudLongThumbnail, CloudThumbnail, CloudThumbnailProps } from "./CloudThumbnail";
 
 const DEFAULT_CLOUD_SHORT: CloudShortProps = {
   title: "StickNation Cloud Short",
@@ -46,6 +46,19 @@ export const Root: React.FC = () => {
         width={1080}
         height={1920}
         defaultProps={DEFAULT_THUMB}
+      />
+      <Still
+        id="CloudLongThumbnail"
+        component={CloudLongThumbnail}
+        width={1280}
+        height={720}
+        defaultProps={{
+          topBadge: "7 TRAPS",
+          headline: "DON'T BLINK!",
+          accentHex: "#FFD60A",
+          primaryImgPath: "scenes/mentos_cola/scene_3_eruption.jpg",
+          secondaryImgPath: "scenes/knuckle_cracking/scene_2_xray_bones.jpg",
+        }}
       />
       <Composition
         id="GravityShortTest"

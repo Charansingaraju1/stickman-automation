@@ -2,8 +2,9 @@ name: Daily Automated YouTube Shorts
 
 on:
   schedule:
-    # 1 upload per day at peak US window (2:30 PM EST = 1:00 AM IST next day) per Boss's request
-    - cron: '30 19 * * *' # 2:30 PM EST = 1:00 AM IST next day
+    # 2 peak US uploads/day aligned with top channel window (15:00 & 22:00 UTC = 10:00 AM & 5:00 PM EST)
+    - cron: '0 15 * * *'
+    - cron: '0 22 * * *'
   workflow_dispatch: # Allows manual 1-click trigger anytime from GitHub UI
 
 jobs:
@@ -31,13 +32,19 @@ jobs:
           echo '${{ secrets.YOUTUBE_TOKEN_JSON }}' > token.json
           echo '${{ secrets.YOUTUBE_CLIENT_SECRET_JSON }}' > client_secret.json
 
-      - name: Publish Next Short in Queue
+      - name: Publish Next Short on YouTube
         run: python upload_to_youtube.py
+
+      - name: Cross-Post Next Reel on Instagram (@stick_man_nation)
+        env:
+          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+          IG_ACCOUNT_ID: ${{ secrets.IG_ACCOUNT_ID || '17841451949000745' }}
+        run: python upload_to_instagram.py
 
       - name: Commit Updated Upload History
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add uploaded_history.json || true
+          git add uploaded_history.json ig_uploaded_history.json || true
           git commit -m "chore: record published short in queue [skip ci]" || echo "No changes to commit"
           git push || echo "Push skipped"

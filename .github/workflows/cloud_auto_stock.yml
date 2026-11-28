@@ -48,7 +48,7 @@ jobs:
           if [ -n "${{ github.event.inputs.short_key }}" ]; then
             python renderers/cloud_short_factory.py --short "${{ github.event.inputs.short_key }}" --queue
           else
-            python renderers/cloud_short_factory.py --next --min-ready 3 --queue
+            python renderers/cloud_short_factory.py --next --min-ready 6 --queue
           fi
 
       - name: Commit Stocked Short & Queue Manifest

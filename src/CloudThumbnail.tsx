@@ -129,3 +129,98 @@ export const CloudThumbnail: React.FC<CloudThumbnailProps> = ({
     </AbsoluteFill>
   );
 };
+
+// High-contrast 16:9 split-duel thumbnail for 4,000-Watch-Hour YouTube compilations (1280x720)
+export const CloudLongThumbnail: React.FC<CloudThumbnailProps> = ({
+  topBadge,
+  headline,
+  primaryImgPath,
+  secondaryImgPath,
+}) => {
+  const leftImg = primaryImgPath || "scenes/mentos_cola/scene_3_eruption.jpg";
+  const rightImg = secondaryImgPath || "scenes/knuckle_cracking/scene_2_xray_bones.jpg";
+
+  return (
+    <AbsoluteFill
+      style={{
+        backgroundColor: "#050811",
+        fontFamily: "Impact, Arial Black, sans-serif",
+        overflow: "hidden",
+      }}
+    >
+      <div style={{ position: "absolute", left: 0, top: 0, width: "51%", height: "100%", overflow: "hidden" }}>
+        <Img
+          src={staticFile(leftImg)}
+          style={{ width: "100%", height: "100%", objectFit: "cover", filter: "contrast(1.12) saturate(1.18)" }}
+        />
+        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(90deg, rgba(255,59,48,0.22), rgba(5,8,16,0.45))" }} />
+      </div>
+
+      <div style={{ position: "absolute", right: 0, top: 0, width: "51%", height: "100%", overflow: "hidden" }}>
+        <Img
+          src={staticFile(rightImg)}
+          style={{ width: "100%", height: "100%", objectFit: "cover", filter: "contrast(1.12) saturate(1.18)" }}
+        />
+        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(270deg, rgba(0,229,255,0.22), rgba(5,8,16,0.45))" }} />
+      </div>
+
+      {/* Diagonal lightning divider */}
+      <div
+        style={{
+          position: "absolute",
+          left: "49%",
+          top: -40,
+          bottom: -40,
+          width: 18,
+          backgroundColor: "#FFD60A",
+          border: "5px solid #000000",
+          transform: "rotate(7deg)",
+          boxShadow: "0 0 36px rgba(255,214,10,0.8)",
+        }}
+      />
+
+      {/* Heavy scrim for feed-size contrast */}
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          background: "linear-gradient(180deg, rgba(5,8,16,0.72) 0%, rgba(5,8,16,0.18) 45%, rgba(5,8,16,0.88) 100%)",
+        }}
+      />
+
+      <div
+        style={{
+          position: "absolute",
+          bottom: 44,
+          left: 48,
+          right: 48,
+          textAlign: "center",
+          lineHeight: 0.94,
+        }}
+      >
+        <div
+          style={{
+            fontSize: 94,
+            color: "#FFFFFF",
+            WebkitTextStroke: "6px #000000",
+            textShadow: "0 10px 24px rgba(0,0,0,0.95)",
+            letterSpacing: 3,
+          }}
+        >
+          {topBadge}
+        </div>
+        <div
+          style={{
+            fontSize: 122,
+            color: "#FFD60A",
+            WebkitTextStroke: "7px #000000",
+            textShadow: "0 12px 28px rgba(0,0,0,0.95)",
+            letterSpacing: 3,
+          }}
+        >
+          {headline}
+        </div>
+      </div>
+    </AbsoluteFill>
+  );
+};
